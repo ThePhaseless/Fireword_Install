@@ -1,19 +1,26 @@
 #!/bin/bash
-
+#
 # Post-Installation Script
 # ------------------------
-# This script automates the setup of a fresh system by installing and configuring
+# This script automates the setup of a fresh system by installing and configuring Ubuntu Server
 #
 # Author: ThePhaseless
 # Date:   September 18, 2023
 #
 
-# use sudo without password
-sudo echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
-
 # Update the package list and upgrade existing packages
 sudo apt update
 sudo apt upgrade -y
+
+# Show discs to the user and ask which discs should be formated with btrfs and prepared to be used with RAID0
+lsblk
+echo "Which discs should be formated and prepared to be used with RAID0? (e.g., sda sdb sdc)"
+read -p "Discs: " DISCS
+for DISC in $DISCS; do
+    sudo mkfs.btrfs -f /dev/$DISC
+    sudo mkdir -p /mnt/$DISC
+    sudo mount /dev/$DISC /mnt/$DISC
+done
 
 # Install Zsh and Oh-My-Zsh
 sudo apt install zsh -y
@@ -21,6 +28,9 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 
 # Set Zsh as the default shell
 chsh -s $(which zsh)
+
+# Switch to the Zsh shell
+zsh
 
 # Install a nice Zsh theme (e.g., 'agnoster')
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/' ~/.zshrc
