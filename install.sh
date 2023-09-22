@@ -96,7 +96,8 @@ echo "Done..."
 # Fix Wifi, add renderer: NetworkManager to /etc/netplan/00-installer-config.yaml after version: 2
 
 echo "Fixing Wifi..."
-sed -i 's/version: 2/version: 2\nrenderer: NetworkManager/' /etc/netplan/00-installer-config.yaml
+apt install network-manager -y
+sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
