@@ -57,6 +57,11 @@ fi
 apt update
 apt upgrade -y
 
+# Turning off online wait service
+echo "Turning off online wait service..."
+systemctl disable systemd-networkd-wait-online.service
+echo "Done..."
+
 # Turn off screen after 5 mins of inactivity
 echo "Adding GRUB screen timeout..."
 sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=300/' /etc/default/grub
