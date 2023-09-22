@@ -12,7 +12,7 @@ The following environment variables are used in this script:
 ### Running the Script
 To use this script, simply run the following command:
 ```
-wget https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/master/install.sh && chmod +x install.sh && ./install.sh
+curl -s https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/master/install.sh | bash
 ```
 
 ### General
