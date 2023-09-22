@@ -62,12 +62,6 @@ echo "Turning off online wait service..."
 systemctl disable systemd-networkd-wait-online.service
 echo "Done..."
 
-# Turn off screen after 5 mins of inactivity
-echo "Adding GRUB screen timeout..."
-sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=300/' /etc/default/grub
-update-grub
-echo "Done..."
-
 # Show disks to the user and ask which disks should be formated with btrfs and prepared to be used with RAID0 mounted to RAID0_DIR environment variable
 # Don't worry, it will be backed up daily to the cloud
 lsblk
