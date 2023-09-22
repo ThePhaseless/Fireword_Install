@@ -12,7 +12,7 @@ The following environment variables are used in this script:
 ### Running the Script
 To use this script, simply run the following command:
 ```
-curl -O https://raw.githubusercontent.com/bradparks/MyPostInstall/master/install.sh && chmod +x install.sh && ./install.sh
+curl -O https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/master/install.sh && chmod +x install.sh && sudo ./install.sh
 ```
 
 ### General

@@ -84,7 +84,6 @@ done
 
 # Install and config rclone
 echo "Installing rclone..."
-sudo -v
 curl https://rclone.org/install.sh | sudo bash
 echo "Done..."
 
@@ -93,11 +92,18 @@ echo "Configuring rclone..."
 echo "Please name the remote 'gdrive' and select 'Google Drive' as the storage provider"
 rclone config
 
+# Install Tailscale
+echo "Installing Tailscale..."
+curl -fsSL https://tailscale.com/install.sh | sh
+echo "Done..."
+
+tailscale up
+
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
 crontab -l | {
   cat
-  echo "0 0 * * * rclone sync/public gdrive:Backup"
+  echo "0 0 * * * rclone sync /public gdrive:Backup"
 } | crontab -
 
 # Preparing SAMBA
@@ -139,13 +145,6 @@ echo "Done..."
 echo "Installing dependencies..."
 apt install curl git rsync gh -y
 echo "Done..."
-
-# Install Tailscale
-echo "Installing Tailscale..."
-curl -fsSL https://tailscale.com/install.sh | sh
-echo "Done..."
-
-tailscale up
 
 # Install Zsh and Oh-My-Zsh
 apt install zsh -y
