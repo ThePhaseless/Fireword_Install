@@ -34,11 +34,11 @@ if [ "$default" = True ]; then
   echo "MEDIA_DIR=$MEDIA_DIR"
   read -p "Do you want to use the default environment variables? (y/N) " answer
   case $answer in
-  *)
+  [Nn]*)
     echo "Please set the environment variables and run the script again"
     exit
     ;;
-  [Yy]*) ;;
+  *) ;;
   esac
 fi
 
@@ -86,9 +86,12 @@ done
 echo "Installing rclone..."
 sudo -v
 curl https://rclone.org/install.sh | sudo bash
+echo "Done..."
 
 # Configure rclone
-rclone config create gdrive drive
+echo "Configuring rclone..."
+echo "Please name the remote 'gdrive' and select 'Google Drive' as the storage provider"
+rclone config
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
