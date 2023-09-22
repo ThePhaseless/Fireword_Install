@@ -32,13 +32,13 @@ if [ "$default" = True ]; then
   echo "RAID0_DIR=$RAID0_DIR"
   echo "CONFIG_DIR=$CONFIG_DIR"
   echo "MEDIA_DIR=$MEDIA_DIR"
-  read -p "Do you want to use the default environment variables? (Y/n) " answer
+  read -p "Do you want to use the default environment variables? (y/N) " answer
   case $answer in
-  [Nn]*)
+  *)
     echo "Please set the environment variables and run the script again"
     exit
     ;;
-  *) ;;
+  [Yy]*) ;;
   esac
 fi
 
