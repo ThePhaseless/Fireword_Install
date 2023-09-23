@@ -53,6 +53,9 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# set current folder to the user's home directory
+cd ~
+
 # Set up Timezone
 echo "Setting up Timezone..."
 sudo timedatectl set-timezone Europe/Warsaw
@@ -158,6 +161,11 @@ chmod 777 /public/SSD
 echo "Restarting SAMBA..."
 systemctl restart smbd
 echo "Done..."
+
+# Add CONFIG_PATH and MEDIA_PATH to environment variables
+echo "Adding CONFIG_PATH and MEDIA_PATH to environment variables..."
+echo "export CONFIG_PATH=$CONFIG_DIR" >>$PWD/.zshrc
+echo "export MEDIA_PATH=$MEDIA_DIR" >>$PWD/.zshrc
 
 # Install dependencies
 echo "Installing dependencies..."
