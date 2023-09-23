@@ -1,0 +1,16 @@
+http:
+  routers:
+    prowlarr-router:
+      rule: "Host(`prowlarr.{{ env "HOSTNAME" }}`)"
+      service: prowlarr-service
+
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+
+  services:
+    prowlarr-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:2323"

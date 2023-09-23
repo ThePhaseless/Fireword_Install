@@ -1,0 +1,14 @@
+http:
+  routers:
+    dashboard-router:
+      rule: "Host(`proxy.{{ env "HOSTNAME" }}`)"
+      service: dashboard-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+  services:
+    dashboard-service:
+      loadBalancer:
+        servers:
+          - url: "http://traefik:8080"

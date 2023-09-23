@@ -1,0 +1,116 @@
+version: "3"
+name: home
+services:
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: homepage
+    environment:
+      PUID: 1000
+      PGID: 1000
+    ports:
+      - 1111:3000
+    volumes:
+      - ${CONFIG_PATH}/HomePage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
+
+  pufferpanel:
+    container_name: pufferpanel
+    ports:
+      - "2222:8080"
+      - "5657:5657"
+      - "25565:25565"
+    volumes:
+      - "${CONFIG_PATH}/PufferPanel:/etc/pufferpanel"
+      - "${CONFIG_PATH}/PufferPanelServers:/var/lib/pufferpanel"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: unless-stopped
+    image: "pufferpanel/pufferpanel:java"
+
+  sggwbot:
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+    restart: unless-stopped
+    container_name: sggwbot
+    image: thephaseless/sggwbot:main
+
+  traefik:
+    restart: unless-stopped
+    container_name: traefik
+    # The official v2 Traefik docker image
+    image: traefik:latest
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - "--log.level=DEBUG"
+      - "--providers.docker"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
+      - "--global.sendAnonymousUsage=true"
+      - "--providers.file.directory=/config"
+      - "--providers.file.watch=true"
+      - "--certificatesResolvers.cloudflare.acme.email=kukubaorch@gmail.com"
+      - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+    environment:
+      - HOSTNAME=fireword.xyz
+      - TARGET_IP=192.168.1.10
+      - CF_API_EMAIL=kukubaorch@gmail.com
+      - CF_DNS_API_TOKEN=7Vm9YWiuIgMTbm7W5JS2zQGYvP83ZdnHYEvYzaof
+    ports:
+      # The HTTP port
+      - "80:80"
+      - "443:443"
+      - "3333:8080"
+    network_mode: host
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${CONFIG_PATH}/Traefik/acme.json:/acme.json
+      - ${CONFIG_PATH}/Traefik/config:/config
+      # - ./traefik.yaml:/etc/traefik/traefik.yaml
+    labels:
+      - traefik.http.routers.proxy.tls=true
+      - traefik.http.routers.proxy.tls.certresolver=cloudflare
+      - traefik.http.routers.proxy.tls.domains[0].main=fireword.xyz
+      - traefik.http.routers.proxy.tls.domains[0].sans=*.fireword.xyz
+
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome
+    restart: unless-stopped
+    volumes:
+      - "${CONFIG_PATH}/AdGuard/work:/opt/adguardhome/work"
+      - "${CONFIG_PATH}/AdGuard/conf:/opt/adguardhome/conf"
+    ports:
+      - "53:53" # DNS
+      - "4444:3000/tcp" # WebUI
+
+  scanservjs:
+    image: "sbs20/scanservjs:latest"
+    ports:
+      - "5555:8080"
+    volumes:
+      - "/var/run/dbus:/var/run/dbus"
+      - "${MEDIA_PATH}/Scans:/app/data/output"
+      - "${CONFIG_PATH}/Scanservjs:/app/config"
+    restart: unless-stopped
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+    container_name: scanservjs-container
+    privileged: true
+
+  wolweb:
+    container_name: wolweb
+    image: "ghcr.io/sameerdhoot/wolweb"
+    restart: always
+    volumes:
+      - ${CONFIG_PATH}/WakeOnLAN/devices.json:/devices.json
+    network_mode: host
+    environment:
+      WOLWEBHOST: "0.0.0.0"
+      WOLWEBPORT: "6666"
+      WOLWEBVDIR: "/"
+      WOLWEBBCASTIP: "192.168.1.255:9"

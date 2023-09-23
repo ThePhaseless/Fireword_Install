@@ -107,8 +107,15 @@ rclone config
 echo "Installing Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
 echo "Done..."
-
 tailscale up
+
+# Install Github CLI
+echo "Installing Github CLI..."
+sudo apt install gh -y
+echo "Done..."
+
+gh auth login
+gh auth setup-git
 
 # Turning off online wait service
 echo "Turning off online wait service..."
@@ -169,7 +176,7 @@ echo "export MEDIA_PATH=$MEDIA_DIR" >>$PWD/.zshrc
 
 # Install dependencies
 echo "Installing dependencies..."
-apt install curl rsync gh btop -y
+apt install curl rsync btop -y
 echo "Done..."
 
 # Install Docker

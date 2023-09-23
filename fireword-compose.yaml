@@ -1,10 +1,20 @@
-version: '3.8'
+version: "3.8"
+name: fireword
 services:
+  reiverr:
+    image: ghcr.io/aleksilassila/reiverr:latest
+    container_name: reiverr
+    ports:
+      - 9494:9494
+    volumes:
+      - /path/to/appdata/config:/config
+    restart: unless-stopped
+
   httpd:
     image: httpd:latest
     container_name: httpd
     ports:
-      - "85:80"
+      - "1212:80"
     volumes:
       - ${CONFIG_PATH}/Httpd:/usr/local/apache2/htdocs
     restart: unless-stopped
@@ -76,7 +86,7 @@ services:
     volumes:
       - ${CONFIG_PATH}/Prowlarr:/config
     ports:
-      - 9696:9696
+      - 2323:9696
     restart: unless-stopped
 
   qbittorrent:
@@ -84,7 +94,7 @@ services:
     restart: unless-stopped
     image: cr.hotio.dev/hotio/qbittorrent:latest
     ports:
-      - 83:8080
+      - 3434:8080
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -103,7 +113,7 @@ services:
       - LOG_LEVEL=debug
       - TZ=${TIMEZONE}
     ports:
-      - 5055:5055
+      - 4545:5055
     volumes:
       - ${CONFIG_PATH}/Jellyseerr:/app/config
     restart: unless-stopped
@@ -122,7 +132,6 @@ services:
 
     ports:
       - 8096:8096
-      - 8920:8920 #optional
       - 7359:7359/udp #optional
       - 1900:1900/udp #optional
     restart: unless-stopped

@@ -1,0 +1,16 @@
+http:
+  routers:
+    portainer-router:
+      rule: "Host(`portainer.{{ env "HOSTNAME" }}`)"
+      service: portainer-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+    
+  services:
+    portainer-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:9000"
+    

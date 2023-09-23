@@ -1,0 +1,15 @@
+http:
+  routers:
+    wol-router:
+      rule: "Host(`wol.{{ env "HOSTNAME" }}`)"
+      service: wol-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+
+  services:
+    wol-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:8089"

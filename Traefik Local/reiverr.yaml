@@ -1,0 +1,15 @@
+http:
+  routers:
+    reiverr-router:
+      rule: "Host(`beta.watch.{{ env "HOSTNAME" }}`)"
+      service: reiverr-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+
+  services:
+    reiverr-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:9494"

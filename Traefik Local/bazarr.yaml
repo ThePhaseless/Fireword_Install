@@ -1,0 +1,17 @@
+http:
+  routers:
+    bazarr-router:
+      rule: "Host(`bazarr.{{ env "HOSTNAME" }}`)"
+      service: bazarr-service
+      
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+    
+  services:
+    bazarr-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:6767"
+    
