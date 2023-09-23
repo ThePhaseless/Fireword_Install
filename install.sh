@@ -71,6 +71,13 @@ for DISK in $DISKS; do
   mount /dev/$DISK $RAID0_DIR
 done
 
+# Install Zsh and Oh-My-Zsh
+apt install git zsh -y
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Set Zsh as the default shell
+sudo -u $USER chsh -s $(which zsh)
+
 # Install and config rclone
 echo "Installing rclone..."
 curl https://rclone.org/install.sh | sudo bash
@@ -94,7 +101,6 @@ systemctl disable systemd-networkd-wait-online.service
 echo "Done..."
 
 # Fix Wifi, add renderer: NetworkManager to /etc/netplan/00-installer-config.yaml after version: 2
-
 echo "Fixing Wifi..."
 apt install network-manager -y
 sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
@@ -108,7 +114,7 @@ crontab -l | {
 
 # Preparing SAMBA
 echo "Preparing SAMBA..."
-apt install samba -y
+apt install samba wsdd -y
 
 echo "Creating SAMBA shares..."
 printf "[HDD]\n
@@ -143,19 +149,12 @@ echo "Done..."
 
 # Install dependencies
 echo "Installing dependencies..."
-apt install curl git rsync gh -y
+apt install curl rsync gh btop -y
 echo "Done..."
-
-# Install Zsh and Oh-My-Zsh
-apt install zsh -y
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# Set Zsh as the default shell
-chsh -s $(which zsh)
 
 # Configure Zsh
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="refined"/' ~/.zshrc
-sed -i 's/plugins=(git)/plugins=(git docker docker-compose catimg colored-man-pages colorize command-not-found compleat cp extract gh zsh-interactive-cd vscode ubuntu timer themes last-working-dir thefuck systemadmin screen safe-paste python pip)/' ~/.zshrc
+sed -i 's/plugins=(git)/plugins=(git docker docker-compose catimg colored-man-pages colorize command-not-found compleat cp extract gh zsh-interactive-cd vscode ubuntu timer themes last-working-dir systemadmin screen safe-paste python pip)/' ~/.zshrc
 echo "Done..."
 
 # Install Docker
@@ -170,6 +169,10 @@ echo "Pulling and running Portainer..."
 docker volume create portainer_data
 docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_DIR/Portainer:/data portainer/portainer-ce
 echo "Done..."
+
+# Allow for sudo without password
+echo "Changing sudo settings..."
+echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$USER
 
 # Clean up unnecessary packages
 echo "Cleaning up unnecessary packages..."
