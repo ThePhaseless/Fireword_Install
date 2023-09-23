@@ -53,6 +53,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Set up Timezone
+echo "Setting up Timezone..."
+sudo timedatectl set-timezone Europe/Warsaw
+echo "Done..."
+
 # Update the package list and upgrade existing packages
 apt update
 apt upgrade -y
@@ -72,10 +77,17 @@ for DISK in $DISKS; do
 done
 
 # Install Zsh and Oh-My-Zsh
-apt install git zsh -y
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+sudo apt install git zsh -y
+sudo -u $USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Download ZSH config
+echo "Downloading ZSH config..."
+curl -fsSL https://raw.githubusercontent.com/ThePhaseless/Post-Installation-Script/master/.zshrc -o $CONFIG_DIR/.zshrc
+echo "Done..."
 
 # Set Zsh as the default shell
+echo "Setting Zsh as the default shell..."
+echo "Please enter your password"
 sudo -u $USER chsh -s $(which zsh)
 
 # Install and config rclone
@@ -152,11 +164,6 @@ echo "Installing dependencies..."
 apt install curl rsync gh btop -y
 echo "Done..."
 
-# Configure Zsh
-sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="refined"/' ~/.zshrc
-sed -i 's/plugins=(git)/plugins=(git docker docker-compose catimg colored-man-pages colorize command-not-found compleat cp extract gh zsh-interactive-cd vscode ubuntu timer themes last-working-dir systemadmin screen safe-paste python pip)/' ~/.zshrc
-echo "Done..."
-
 # Install Docker
 echo "Installing Docker and Docker Compose..."
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -179,7 +186,10 @@ echo "Cleaning up unnecessary packages..."
 apt autoremove -y
 echo "Done..."
 
+# delete this file
+echo "Deleting this file..."
+rm install.sh
+echo "Done..."
+
 echo "Post-Installation Script finished successfully!"
-echo "The system will reboot in 5 seconds..."
-sleep 5
-reboot
+echo "It is recommended to reboot the system now"
