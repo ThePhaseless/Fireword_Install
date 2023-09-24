@@ -1,0 +1,16 @@
+http:
+  routers:
+    vscode-router:
+      rule: "Host(`code.{{ env "HOSTNAME" }}`)"
+      service: vscode-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+    
+  services:
+    vscode-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:8443"
+    

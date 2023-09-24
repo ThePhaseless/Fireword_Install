@@ -1,0 +1,14 @@
+http:
+  routers:
+    asus-router:
+      rule: "Host(`asus.fireword.xyz`)"
+      service: asus-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+  services:
+    asus-service:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.1"

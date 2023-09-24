@@ -1,0 +1,16 @@
+http:
+  routers:
+    qbt-router:
+      rule: "Host(`qbt.{{ env "HOSTNAME" }}`)"
+      service: qbt-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+    
+  services:
+    qbt-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:83"
+    

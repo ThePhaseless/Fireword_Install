@@ -1,0 +1,16 @@
+http:
+  routers: 
+    whoami-router:
+      rule: "Host(`whoami.{{ env "HOSTNAME" }}`)"
+      service: whoami-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+  services:
+    whoami-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:84"
+      
+    

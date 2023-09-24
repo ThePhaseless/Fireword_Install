@@ -1,0 +1,14 @@
+http:
+  routers:
+    http-router:
+      rule: "Host(`{{ env "HOSTNAME" }}`)"
+      service: http-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+  services:
+    http-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:85"

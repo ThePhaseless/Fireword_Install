@@ -115,7 +115,6 @@ sudo apt install gh -y
 echo "Done..."
 
 gh auth login
-gh auth setup-git
 
 # Turning off online wait service
 echo "Turning off online wait service..."

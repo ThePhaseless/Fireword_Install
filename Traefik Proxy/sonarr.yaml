@@ -1,0 +1,17 @@
+http:
+  routers:
+    sonarr-router:
+      rule: "Host(`sonarr.{{ env "HOSTNAME" }}`)"
+      service: sonarr-service
+      
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+    
+  services:
+    sonarr-service:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "TARGET_IP" }}:8989"
+    
