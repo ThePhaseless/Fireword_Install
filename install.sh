@@ -8,16 +8,26 @@
 # Date:   September 18, 2023
 #
 
-# Make sure that environment variables are set
+# Check if the script from git
+if [ ! -d "$PWD/.git" ]; then
+  echo "Please run this script from git"
+  exit
+fi
 
-default=0
+# Make sure that environment variables are set
+default=False
+if [ -z "$SSD_DIR" ]; then
+  SSD_DIR="/public/SSD"
+  default=True
+fi
+
 if [ -z "$RAID0_DIR" ]; then
   RAID0_DIR="/public/HDD"
   default=True
 fi
 
 if [ -z "$CONFIG_DIR" ]; then
-  CONFIG_DIR="/public/SSD/Config"
+  CONFIG_DIR="$SSD_DIR/Config"
   default=True
 fi
 
@@ -29,10 +39,11 @@ fi
 # Ask the user if the default environment variables should be used
 if [ "$default" = True ]; then
   echo "The default environment variables are:"
+  echo "SSD_DIR=$SSD_DIR"
   echo "RAID0_DIR=$RAID0_DIR"
   echo "CONFIG_DIR=$CONFIG_DIR"
   echo "MEDIA_DIR=$MEDIA_DIR"
-  read -p "Do you want to use the default environment variables? (y/N) " answer
+  read -p "Do you want to use the default environment variables? (Y/n) " answer
   case $answer in
   [Nn]*)
     echo "Please set the environment variables and run the script again"
@@ -53,9 +64,6 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# set current folder to the user's home directory
-cd ~
-
 # Set up Timezone
 echo "Setting up Timezone..."
 sudo timedatectl set-timezone Europe/Warsaw
@@ -65,19 +73,9 @@ echo "Done..."
 apt update
 apt upgrade -y
 
-# Show disks to the user and ask which disks should be formated with btrfs and prepared to be used with RAID0 mounted to RAID0_DIR environment variable
-# Don't worry, it will be backed up daily to the cloud
-lsblk
-echo "Which disks should be formated and prepared to be used with RAID0? (e.g., sda sdb sdc, none)"
-read -p "Disks: " DISKS
-for DISK in $DISKS; do
-  if [ "$DISK" = "none" ]; then
-    break
-  fi
-  mkfs.btrfs -f /dev/$DISK
-  mkdir -p $RAID0_DIR
-  mount /dev/$DISK $RAID0_DIR
-done
+# Run create_raid0.sh
+echo "Running create_raid0.sh..."
+bash create_raid0.sh
 
 # Install Zsh and Oh-My-Zsh
 sudo apt install git zsh -y
@@ -128,17 +126,23 @@ sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-in
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
-crontab -l | {
-  cat
-  echo "0 0 * * * rclone sync /public gdrive:Backup"
-} | crontab -
+# Check if rclone is already in crontab
+if crontab -l | grep -q "rclone"; then
+  echo "rclone is already in crontab"
+else
+  echo "rclone is not in crontab"
+  echo "Adding rclone to crontab..."
+  echo "0 0 * * * rclone sync /public gdrive:Backup" | crontab -
+fi
+echo "Done..."
 
 # Preparing SAMBA
 echo "Preparing SAMBA..."
 apt install samba wsdd -y
 
 echo "Creating SAMBA shares..."
-printf "[HDD]\n
+# Add HDD_SAMBA_SHARE to config file
+HDD_SAMBA_SHARE="[HDD]\n
     path = $RAID0_DIR\n
     acl support = yes\n
     read only = no\n
@@ -146,20 +150,29 @@ printf "[HDD]\n
     browsable = yes\n
     writeable = yes\n
     public = yes\n
-    " | tee -a /etc/samba/smb.conf
+    "
+# Check if the HDD_SAMBA_SHARE is already in the config file
+if grep -Fxq "$HDD_SAMBA_SHARE" /etc/samba/smb.conf; then
+  echo "HDD_SAMBA_SHARE is already in the config file"
+else
+  printf "$HDD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
+fi
 mkdir -p $RAID0_DIR
 chown nobody:nogroup $RAID0_DIR
 chmod 777 $RAID0_DIR
 
-printf "[SSD]\n
-    path = /public/SSD\n
+# Add SSD_SAMBA_SHARE to config file
+SSD_SAMBA_SHARE="[SSD]\n
+    path = \n
     acl support = yes\n
     read only = no\n
     guest ok = yes\n
     browsable = yes\n
     writeable = yes\n
     public = yes\n
-    " | tee -a /etc/samba/smb.conf
+    "
+
+printf | tee -a /etc/samba/smb.conf
 mkdir -p /public/SSD
 chown nobody:nogroup /public/SSD
 chmod 777 /public/SSD
@@ -172,6 +185,9 @@ echo "Done..."
 echo "Adding CONFIG_PATH and MEDIA_PATH to environment variables..."
 echo "export CONFIG_PATH=$CONFIG_DIR" >>$PWD/.zshrc
 echo "export MEDIA_PATH=$MEDIA_DIR" >>$PWD/.zshrc
+echo "export SSD_PATH=$SSD_DIR" >>$PWD/.zshrc
+echo "export RAID0_PATH=$RAID0_DIR" >>$PWD/.zshrc
+echo "Done..."
 
 # Install dependencies
 echo "Installing dependencies..."
@@ -200,10 +216,17 @@ echo "Cleaning up unnecessary packages..."
 apt autoremove -y
 echo "Done..."
 
-# delete this file
-echo "Deleting this file..."
-rm install.sh
-echo "Done..."
+# Ask the user if scirpt folder should be deleted
+read -p "Do you want to delete the script folder? (Y/n) " answer
+case $answer in
+[Nn]*)
+  echo "Skipping..."
+  ;;
+*)
+  echo "Deleting..."
+  rm -rf $PWD
+  ;;
+esac
 
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now"
