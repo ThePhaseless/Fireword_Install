@@ -12,8 +12,8 @@ else
     fi
 
     # Check if disks are valid
-    if [ -z "$RAID0_DIR" ]; then
-        echo "RAID0_DIR not set..."
+    if [ -z "$RAID0_PATH" ]; then
+        echo "RAID0_PATH not set..."
         exit 1
     fi
 
@@ -29,9 +29,9 @@ else
     # Create filesystem
     mkfs.ext4 -F /dev/md0
     # Mount RAID0
-    mkdir -p $RAID0_DIR
-    mount /dev/md0 $RAID0_DIR
-    echo "/dev/md0 $RAID0_DIR btrfs defaults 0 0" | tee -a /etc/fstab
+    mkdir -p $RAID0_PATH
+    mount /dev/md0 $RAID0_PATH
+    echo "/dev/md0 $RAID0_PATH btrfs defaults 0 0" | tee -a /etc/fstab
     # Update initramfs
     echo "Updating initramfs..."
     systemctl daemon-reload

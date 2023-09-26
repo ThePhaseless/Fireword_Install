@@ -16,33 +16,33 @@ fi
 
 # Make sure that environment variables are set
 default=False
-if [ -z "$SSD_DIR" ]; then
-  SSD_DIR="/public/SSD"
+if [ -z "$SSD_PATH" ]; then
+  SSD_PATH="/public/SSD"
   default=True
 fi
 
-if [ -z "$RAID0_DIR" ]; then
-  RAID0_DIR="/public/HDD"
+if [ -z "$RAID0_PATH" ]; then
+  RAID0_PATH="/public/HDD"
   default=True
 fi
 
-if [ -z "$CONFIG_DIR" ]; then
-  CONFIG_DIR="$SSD_DIR/Config"
+if [ -z "$CONFIG_PATH" ]; then
+  CONFIG_PATH="$SSD_PATH/Config"
   default=True
 fi
 
-if [ -z "$MEDIA_DIR" ]; then
-  MEDIA_DIR="$RAID0_DIR/Media"
+if [ -z "$MEDIA_PATH" ]; then
+  MEDIA_PATH="$RAID0_PATH/Media"
   default=True
 fi
 
 # Ask the user if the default environment variables should be used
 if [ "$default" = True ]; then
   echo "The default environment variables are:"
-  echo "SSD_DIR=$SSD_DIR"
-  echo "RAID0_DIR=$RAID0_DIR"
-  echo "CONFIG_DIR=$CONFIG_DIR"
-  echo "MEDIA_DIR=$MEDIA_DIR"
+  echo "SSD_PATH=$SSD_PATH"
+  echo "RAID0_PATH=$RAID0_PATH"
+  echo "CONFIG_PATH=$CONFIG_PATH"
+  echo "MEDIA_PATH=$MEDIA_PATH"
   read -p "Do you want to use the default environment variables? (Y/n) " answer
   case $answer in
   [Nn]*)
@@ -54,8 +54,8 @@ if [ "$default" = True ]; then
 fi
 
 # Make sure that the RAID0 directory exists
-if [ ! -d "$RAID0_DIR" ]; then
-  mkdir -p $RAID0_DIR
+if [ ! -d "$RAID0_PATH" ]; then
+  mkdir -p $RAID0_PATH
 fi
 
 # Make sure that the script is run as root
@@ -83,7 +83,7 @@ sudo -u $USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmy
 
 # Download ZSH config
 echo "Downloading ZSH config..."
-curl -fsSL https://raw.githubusercontent.com/ThePhaseless/Post-Installation-Script/master/.zshrc -o $CONFIG_DIR/.zshrc
+curl -fsSL https://raw.githubusercontent.com/ThePhaseless/Post-Installation-Script/master/.zshrc -o $CONFIG_PATH/.zshrc
 echo "Done..."
 
 # Set Zsh as the default shell
@@ -126,13 +126,14 @@ sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-in
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
+cp sync_backups.sh $CONFIG_PATH
 # Check if rclone is already in crontab
-if crontab -l | grep -q "rclone"; then
+if crontab -l | grep -q "sync_backups.sh"; then
   echo "rclone is already in crontab"
 else
   echo "rclone is not in crontab"
   echo "Adding rclone to crontab..."
-  echo "0 0 * * * rclone sync /public gdrive:Backup" | crontab -
+  echo "0 4 * * * bash $CONFIG_PATH/sync_backups.sh" | crontab -
 fi
 echo "Done..."
 
@@ -143,7 +144,7 @@ apt install samba wsdd -y
 echo "Creating SAMBA shares..."
 # Add HDD_SAMBA_SHARE to config file
 HDD_SAMBA_SHARE="[HDD]\n
-    path = $RAID0_DIR\n
+    path = $RAID0_PATH\n
     acl support = yes\n
     read only = no\n
     guest ok = yes\n
@@ -157,9 +158,10 @@ if grep -Fxq "$HDD_SAMBA_SHARE" /etc/samba/smb.conf; then
 else
   printf "$HDD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
 fi
-mkdir -p $RAID0_DIR
-chown nobody:nogroup $RAID0_DIR
-chmod 777 $RAID0_DIR
+
+mkdir -p $RAID0_PATH
+chown nobody:nogroup $RAID0_PATH
+chmod 777 $RAID0_PATH
 
 # Add SSD_SAMBA_SHARE to config file
 SSD_SAMBA_SHARE="[SSD]\n
@@ -171,8 +173,13 @@ SSD_SAMBA_SHARE="[SSD]\n
     writeable = yes\n
     public = yes\n
     "
+# Check if the SSD_SAMBA_SHARE is already in the config file
+if grep -Fxq "$SSD_SAMBA_SHARE" /etc/samba/smb.conf; then
+  echo "SSD_SAMBA_SHARE is already in the config file"
+else
+  printf "$SSD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
+fi
 
-printf | tee -a /etc/samba/smb.conf
 mkdir -p /public/SSD
 chown nobody:nogroup /public/SSD
 chmod 777 /public/SSD
@@ -183,10 +190,10 @@ echo "Done..."
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding CONFIG_PATH and MEDIA_PATH to environment variables..."
-echo "export CONFIG_PATH=$CONFIG_DIR" >>$PWD/.zshrc
-echo "export MEDIA_PATH=$MEDIA_DIR" >>$PWD/.zshrc
-echo "export SSD_PATH=$SSD_DIR" >>$PWD/.zshrc
-echo "export RAID0_PATH=$RAID0_DIR" >>$PWD/.zshrc
+echo "export CONFIG_PATH=$CONFIG_PATH" >>$PWD/.zshrc
+echo "export MEDIA_PATH=$MEDIA_PATH" >>$PWD/.zshrc
+echo "export SSD_PATH=$SSD_PATH" >>$PWD/.zshrc
+echo "export RAID0_PATH=$RAID0_PATH" >>$PWD/.zshrc
 echo "Done..."
 
 # Install dependencies
@@ -204,7 +211,7 @@ echo "Done..."
 # Pull and run Portainer
 echo "Pulling and running Portainer..."
 docker volume create portainer_data
-docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_DIR/Portainer:/data portainer/portainer-ce
+docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_PATH/Portainer:/data portainer/portainer-ce
 echo "Done..."
 
 # Allow for sudo without password

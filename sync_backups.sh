@@ -4,5 +4,5 @@ rclone sync local:$CONFIG_PATH/Fireword/Prowlarr/Backups gDrive:Backups/$(HOSTNA
 rclone sync local:$CONFIG_PATH/Fireword/Bazarr/backup gDrive:Backups/$(HOSTNAME)/Fireword/Bazarr
 rclone sync local:$CONFIG_PATH/Fireword/Recyclarr/configs gDrive:Backups/$(HOSTNAME)/Fireword/Recyclarr
 rclone sync local:$CONFIG_PATH/Fireword/qBittorrent/config gDrive:Backups/$(HOSTNAME)/Fireword/qBittorrent
-rclone sync local:/public/SSD gDrive:Backups/$(HOSTNAME)/Misc --exclude /Config/**
-rclone sync local:/public/HDD gDrive:Backups/$(HOSTNAME)/Misc --exclude /Downloads/**
+rclone sync local:$SSD_PATH gDrive:Backups/$(HOSTNAME)/Misc --exclude /Config/**
+rclone sync local:$RAID0_PATH gDrive:Backups/$(HOSTNAME)/Misc --exclude /Downloads/**

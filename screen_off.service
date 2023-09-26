@@ -1,0 +1,13 @@
+[Unit]
+Description=Blank screen after 1 min and turn it off after 2 min. Any keypress will turn it back on.
+After=ssh.service
+
+[Service]
+Type=oneshot
+Environment=TERM=linux
+StandardOutput=tty
+TTYPath=/dev/console
+ExecStart=$CONFIG_PATH/.boot-scripts/screen_off.sh
+
+[Install]
+WantedBy=multi-user.target
