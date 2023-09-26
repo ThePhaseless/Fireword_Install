@@ -218,6 +218,15 @@ echo "Done..."
 echo "Changing sudo settings..."
 echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$USER
 
+# Install screen_off.service
+echo "Installing screen-off.service..."
+cp screen-off.service /etc/systemd/system
+cp screen-off.sh $CONFIG_PATH
+sudo chmod +x $CONFIG_PATH/screen-off.sh
+sudo chmod +x /etc/systemd/system/screen-off.service
+systemctl enable screen-off.service
+echo "Done..."
+
 # Clean up unnecessary packages
 echo "Cleaning up unnecessary packages..."
 apt autoremove -y
