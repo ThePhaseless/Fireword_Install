@@ -32,9 +32,18 @@ else
     # Mount RAID0
     mkdir -p $RAID0_PATH
     mount /dev/md0 $RAID0_PATH
-    echo "/dev/md0 $RAID0_PATH btrfs defaults 0 0" | tee -a /etc/fstab
-    # Update initramfs
-    echo "Updating initramfs..."
-    systemctl daemon-reload
+
+    # Check if RAID0 is already in fstab
+    if grep -q "$RAID0_PATH" /etc/fstab; then
+        echo "RAID0 already in fstab..."
+    else
+        echo "Adding RAID0 to fstab..."
+        # Add RAID0 to fstab
+        echo "/dev/md0 $RAID0_PATH ext4 defaults 0 0" | tee -a /etc/fstab
+        # Update initramfs
+        echo "Updating initramfs..."
+        systemctl daemon-reload
+    fi
+
     echo "Done..."
 fi
