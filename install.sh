@@ -83,7 +83,7 @@ sudo -u $USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmy
 
 # Download ZSH config
 echo "Downloading ZSH config..."
-curl -fsSL https://raw.githubusercontent.com/ThePhaseless/Post-Installation-Script/master/.zshrc -o $CONFIG_PATH/.zshrc
+curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o $CONFIG_PATH/.zshrc
 echo "Done..."
 
 # Set Zsh as the default shell
