@@ -13,6 +13,7 @@ else
 
     # Check if disks are valid
     if [ -z "$RAID0_PATH" ]; then
+        echo "RAID0_PATH = $RAID0_PATH"
         echo "RAID0_PATH not set..."
         exit 1
     fi

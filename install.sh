@@ -17,22 +17,22 @@ fi
 # Make sure that environment variables are set
 default=False
 if [ -z "$SSD_PATH" ]; then
-  SSD_PATH="/public/SSD"
+  export SSD_PATH="/public/SSD"
   default=True
 fi
 
 if [ -z "$RAID0_PATH" ]; then
-  RAID0_PATH="/public/HDD"
+  export RAID0_PATH="/public/HDD"
   default=True
 fi
 
 if [ -z "$CONFIG_PATH" ]; then
-  CONFIG_PATH="$SSD_PATH/Config"
+  export CONFIG_PATH="$SSD_PATH/Config"
   default=True
 fi
 
 if [ -z "$MEDIA_PATH" ]; then
-  MEDIA_PATH="$RAID0_PATH/Media"
+  export MEDIA_PATH="$RAID0_PATH/Media"
   default=True
 fi
 
