@@ -21,8 +21,8 @@ if [ -z "$SSD_PATH" ]; then
   default=True
 fi
 
-if [ -z "$RAID0_PATH" ]; then
-  export RAID0_PATH="/public/HDD"
+if [ -z "$JBOD_PATH" ]; then
+  export JBOD_PATH="/public/HDD"
   default=True
 fi
 
@@ -32,15 +32,38 @@ if [ -z "$CONFIG_PATH" ]; then
 fi
 
 if [ -z "$MEDIA_PATH" ]; then
-  export MEDIA_PATH="$RAID0_PATH/Media"
+  export MEDIA_PATH="$JBOD_PATH/Media"
   default=True
 fi
+
+echo "Preparing directories..."
+# Create directories
+echo "Creating directories..."
+sudo mkdir $CONFIG_PATH -p
+sudo mkdir $MEDIA_PATH -p
+sudo mkdir $SSD_PATH -p
+sudo mkdir $JBOD_PATH -p
+
+# Set permissions
+echo "Setting permissions..."
+sudo chmod 777 $CONFIG_PATH -R
+sudo chmod 777 $MEDIA_PATH -R
+sudo chmod 777 $SSD_PATH -R
+sudo chmod 777 $JBOD_PATH -R
+
+# Set ownership
+echo "Setting ownership..."
+sudo chown nobody:nogroup $MEDIA_PATH -R
+sudo chown nobody:nogroup $JBOD_PATH -R
+sudo chown nobody:nogroup $SSD_PATH -R
+sudo chown nobody:nogroup $CONFIG_PATH -R
+echo "Done..."
 
 # Ask the user if the default environment variables should be used
 if [ "$default" = True ]; then
   echo "The default environment variables are:"
   echo "SSD_PATH=$SSD_PATH"
-  echo "RAID0_PATH=$RAID0_PATH"
+  echo "JBOD_PATH=$JBOD_PATH"
   echo "CONFIG_PATH=$CONFIG_PATH"
   echo "MEDIA_PATH=$MEDIA_PATH"
   read -p "Do you want to use the default environment variables? (Y/n) " answer
@@ -53,33 +76,22 @@ if [ "$default" = True ]; then
   esac
 fi
 
-# Make sure that the RAID0 directory exists
-if [ ! -d "$RAID0_PATH" ]; then
-  mkdir -p $RAID0_PATH
-fi
-
-# Make sure that the script is run as root
-if [ "$EUID" -ne 0 ]; then
-  echo "Please run this script as root"
-  exit 1
-fi
-
 # Set up Timezone
 echo "Setting up Timezone..."
 sudo timedatectl set-timezone Europe/Warsaw
 echo "Done..."
 
 # Update the package list and upgrade existing packages
-apt update
-apt upgrade -y
+sudo apt update
+sudo apt upgrade -y
 
-# Run create_raid0.sh
-echo "Running create_raid0.sh..."
-bash create_raid0.sh
+# Run create_JBOD.sh
+echo "Running create_JBOD.sh..."
+bash create_JBOD.sh
 
 # Install Zsh and Oh-My-Zsh
 sudo apt install git zsh -y
-sudo -u $USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Download ZSH config
 echo "Downloading ZSH config..."
@@ -89,7 +101,7 @@ echo "Done..."
 # Set Zsh as the default shell
 echo "Setting Zsh as the default shell..."
 echo "Please enter your password"
-sudo -u $USER chsh -s $(which zsh)
+chsh -s $(which zsh)
 
 # Install and config rclone
 echo "Installing rclone..."
@@ -105,7 +117,7 @@ rclone config
 echo "Installing Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
 echo "Done..."
-tailscale up
+sudo tailscale up
 
 # Install Github CLI
 echo "Installing Github CLI..."
@@ -116,12 +128,12 @@ gh auth login
 
 # Turning off online wait service
 echo "Turning off online wait service..."
-systemctl disable systemd-networkd-wait-online.service
+sudo systemctl disable systemd-networkd-wait-online.service
 echo "Done..."
 
 # Fix Wifi, add renderer: NetworkManager to /etc/netplan/00-installer-config.yaml after version: 2
 echo "Fixing Wifi..."
-apt install network-manager -y
+sudo apt install network-manager -y
 sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
 
 # Add rclone to crontab daily
@@ -144,7 +156,7 @@ apt install samba wsdd -y
 echo "Creating SAMBA shares..."
 # Add HDD_SAMBA_SHARE to config file
 HDD_SAMBA_SHARE="[HDD]\n
-    path = $RAID0_PATH\n
+    path = $JBOD_PATH\n
     acl support = yes\n
     read only = no\n
     guest ok = yes\n
@@ -158,10 +170,6 @@ if grep -Fxq "$HDD_SAMBA_SHARE" /etc/samba/smb.conf; then
 else
   printf "$HDD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
 fi
-
-mkdir -p $RAID0_PATH
-chown nobody:nogroup $RAID0_PATH
-chmod 777 $RAID0_PATH
 
 # Add SSD_SAMBA_SHARE to config file
 SSD_SAMBA_SHARE="[SSD]\n
@@ -180,20 +188,16 @@ else
   printf "$SSD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
 fi
 
-mkdir -p /public/SSD
-chown nobody:nogroup /public/SSD
-chmod 777 /public/SSD
-
 echo "Restarting SAMBA..."
 systemctl restart smbd
 echo "Done..."
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
-echo "Adding CONFIG_PATH and MEDIA_PATH to environment variables..."
+echo "Adding environment variables..."
 echo "export CONFIG_PATH=$CONFIG_PATH" >>$PWD/.zshrc
 echo "export MEDIA_PATH=$MEDIA_PATH" >>$PWD/.zshrc
 echo "export SSD_PATH=$SSD_PATH" >>$PWD/.zshrc
-echo "export RAID0_PATH=$RAID0_PATH" >>$PWD/.zshrc
+echo "export JBOD_PATH=$JBOD_PATH" >>$PWD/.zshrc
 echo "Done..."
 
 # Install dependencies
@@ -215,8 +219,9 @@ docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.
 echo "Done..."
 
 # Allow for sudo without password
-echo "Changing sudo settings..."
+echo "Removing password requirement for sudo..."
 echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$USER
+echo "Done..."
 
 # Install screen_off.service
 echo "Installing screen-off.service..."

@@ -6,9 +6,9 @@ This is a script that I use to install my favorite programs on my NAS machines. 
 ### Environment Variables
 The following environment variables are used in this script:
 - `$SSD_PATH` - The directory to SSD SAMBA share. Defaults to `/public/SSD
-- `$RAID0_PATH` - The directory to RAID0 SAMBA share. Defaults to `/public/HDD`
+- `$JBOD_PATH` - The directory to JBOD SAMBA share. Defaults to `/public/HDD`
 - `$CONFIG_PATH` - The directory to install programs to. Defaults to `$SSD_PATH/Config`
-- `$MEDIA_PATH` - The directory to store media files. Defaults to `$RAID0_PATH/Media`
+- `$MEDIA_PATH` - The directory to store media files. Defaults to `$JBOD_PATH/Media`
 
 
 ### Running the Script
