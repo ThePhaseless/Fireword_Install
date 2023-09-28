@@ -6,8 +6,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   traefik:
-    env_file:
-      - config.env
     container_name: traefik
     # The official v2 Traefik docker image
     image: traefik:latest
@@ -26,10 +24,10 @@ services:
       - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
-      # - HOSTNAME=fireword.xyz
-      # - TARGETIP= # IP of the machine running the server
       - CF_API_EMAIL=${CF_API_EMAIL}
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
       - "80:80"
@@ -45,13 +43,6 @@ services:
       - traefik.http.routers.proxy.tls.certresolver=cloudflare
       - traefik.http.routers.proxy.tls.domains[0].main=fireword.xyz
       - traefik.http.routers.proxy.tls.domains[0].sans=*.fireword.xyz
-  whoami:
-    # A container that exposes an API to show its IP address
-    image: traefik/whoami
-    container_name: whoami
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.fireword.xyz`)"
-
   authelia:
     container_name: authelia
     image: authelia/authelia:latest

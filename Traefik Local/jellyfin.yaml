@@ -1,7 +1,7 @@
 http:
   routers:
     jellyfin-router:
-      rule: "Host(`watch.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`watch.{{ env "PROXY_HOSTNAME" }}`)'
       service: jellyfin-service
       entryPoints:
         - websecure
@@ -11,4 +11,4 @@ http:
     jellyfin-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:8096"
+          - url: 'http://{{ env "TARGET_IP"  }}:8096'

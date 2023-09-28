@@ -1,7 +1,7 @@
 http:
   routers:
     jellyseerr-router:
-      rule: "Host(`add.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`add.{{ env "PROXY_HOSTNAME" }}`)'
       service: jellyseerr-service
       entryPoints:
         - websecure
@@ -11,4 +11,4 @@ http:
     jellyseerr-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:5055"
+          - url: 'http://{{ env "TARGET_IP"  }}:5055'

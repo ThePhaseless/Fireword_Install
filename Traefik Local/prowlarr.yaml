@@ -1,7 +1,7 @@
 http:
   routers:
     prowlarr-router:
-      rule: "Host(`prowlarr.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`prowlarr.{{ env "PROXY_HOSTNAME" }}`)'
       service: prowlarr-service
 
       entryPoints:
@@ -13,4 +13,4 @@ http:
     prowlarr-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:2323"
+          - url: 'http://{{ env "TARGET_IP"  }}:2323'

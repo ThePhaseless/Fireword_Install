@@ -1,16 +1,17 @@
 http:
   routers:
     wol-router:
-      rule: "Host(`wol.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`wol.{{ env "PROXY_HOSTNAME" }}`)'
       service: wol-service
+      middlewares:
+        - authelia
       entryPoints:
         - websecure
       tls:
         certResolver: cloudflare
-    
+
   services:
     wol-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:8089"
-    
+          - url: 'http://{{ env "TARGET_IP"  }}:8089'

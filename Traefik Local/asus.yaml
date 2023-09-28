@@ -1,7 +1,7 @@
 http:
   routers:
     asus-router:
-      rule: "Host(`router.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`router.{{ env "PROXY_HOSTNAME" }}`)'
       service: asus-service
       entryPoints:
         - websecure

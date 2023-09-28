@@ -1,7 +1,7 @@
 http:
   routers:
     dashboard-router:
-      rule: "Host(`proxy.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`proxy.{{ env "PROXY_HOSTNAME" }}`)'
       service: dashboard-service
       entryPoints:
         - websecure

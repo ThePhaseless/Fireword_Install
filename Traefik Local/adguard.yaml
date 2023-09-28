@@ -1,9 +1,8 @@
 http:
   routers:
     adguard-router:
-      rule: "Host(`adguard.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`adguard.{{ env "PROXY_HOSTNAME" }}`)'
       service: adguard-service
-
       entryPoints:
         - websecure
       tls:
@@ -13,4 +12,4 @@ http:
     adguard-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:1212"
+          - url: 'http://{{ env "TARGET_IP"  }}:1212'

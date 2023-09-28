@@ -1,17 +1,17 @@
 http:
   routers:
     print-router:
-      rule: "Host(`print.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`print.{{ env "PROXY_HOSTNAME" }}`)'
       service: print-service
-      
+      middlewares:
+        - authelia
       entryPoints:
         - websecure
       tls:
         certResolver: cloudflare
-    
+
   services:
     print-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:631"
-    
+          - url: 'http://{{ env "TARGET_IP"  }}:631'

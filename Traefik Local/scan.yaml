@@ -1,17 +1,16 @@
 http:
   routers:
     scan-router:
-      rule: "Host(`scan.{{ env "HOSTNAME" }}`)"
+      rule: 'Host(`scan.{{ env "PROXY_HOSTNAME" }}`)'
       service: scan-service
-      
+
       entryPoints:
         - websecure
       tls:
         certResolver: cloudflare
-    
+
   services:
     scan-service:
       loadBalancer:
         servers:
-          - url: "http://{{ env "TARGET_IP" }}:89"
-    
+          - url: 'http://{{ env "TARGET_IP"  }}:89'

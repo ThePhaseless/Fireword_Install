@@ -27,7 +27,22 @@ sh get-docker.sh
 rm get-docker.sh
 echo "Done..."
 
-# Copy Traefik config
-echo "Copying Traefik config..."
-cp -r ./traefik ~/Proxy/Config/Traefik
+# Copy proxy files
+echo "Copying proxy config files..."
+cp ./"Traefik Proxy"/* ~/Proxy/Traefik/config
 cp ./proxy.env ~/Proxy/.env
+cp ./proxy-compose.yml ~/Proxy/docker-compose.yml
+echo "Done..."
+
+# Copy upload_acme.sh and add it to crontab daily
+echo "Copying upload_acme.sh..."
+cp ./upload_acme.sh ~/Proxy/upload_acme.sh
+echo "Done..."
+
+echo "Adding upload_acme.sh to crontab..."
+(
+    crontab -l 2>/dev/null
+    echo "0 0 * * * ~/Proxy/upload_acme.sh"
+) | crontab -
+
+docker-compose -f ~/Proxy/docker-compose.yml up -d

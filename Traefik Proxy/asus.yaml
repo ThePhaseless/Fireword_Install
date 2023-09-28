@@ -1,8 +1,10 @@
 http:
   routers:
     asus-router:
-      rule: "Host(`asus.fireword.xyz`)"
+      rule: 'Host(`router.{{ env "PROXY_HOSTNAME" }}`)'
       service: asus-service
+      middlewares:
+        - authelia
       entryPoints:
         - websecure
       tls:
