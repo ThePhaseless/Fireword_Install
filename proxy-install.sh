@@ -66,7 +66,7 @@ fi
 chmod +x ~/Proxy/upload_acme.sh
 
 # Start proxy
-docker-compose -f ~/Proxy/docker-compose.yml up -d
+sudo docker compose -f ~/Proxy/docker-compose.yml up -d
 
 echo "Done..."
 echo "Proxy setup complete! Don't forget to upload your acme.json file to server after the first certificate is generated."
