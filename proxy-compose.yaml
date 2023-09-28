@@ -23,7 +23,6 @@ services:
       - "--global.sendAnonymousUsage=true"
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
-      - "--certificatesResolvers.cloudflare.acme.email=kukubaorch@gmail.com"
       - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
@@ -41,7 +40,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./Traefik/acme.json:/acme.json
       - ./Traefik/config:/config
-      # - ./traefik.yaml:/etc/traefik/traefik.yaml
     labels:
       - traefik.http.routers.proxy.tls=true
       - traefik.http.routers.proxy.tls.certresolver=cloudflare

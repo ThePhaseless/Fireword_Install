@@ -90,10 +90,10 @@ echo "Do you want to setup a disk array?\n 1) RAID0\n 2) MergerFS\n 3) None"
 read -p "Choice: " choice
 case $choice in
 [1]*)
-  bash raid0.sh
+  sudo bash ./raid0.sh
   ;;
 [2]*)
-  bash mergerfs.sh
+  sudo bash ./mergerfs.sh
   ;;
 *)
   echo "Skipping..."
@@ -112,7 +112,11 @@ echo "Done..."
 # Set Zsh as the default shell
 echo "Setting Zsh as the default shell..."
 echo "Please enter your password"
-chsh -s $(which zsh)
+sudo chsh -s $(which zsh) $USER
+
+# Set ZSH as the default shell for root
+echo "Setting Zsh as the default shell for root..."
+sudo chsh -s $(which zsh) root
 
 # Install and config rclone
 echo "Installing rclone..."
@@ -136,6 +140,18 @@ sudo apt install gh -y
 echo "Done..."
 
 gh auth login
+
+# Ask to install vscode
+read -p "Do you want to install vscode? (Y/n) " answer
+case $answer in
+[Nn]*)
+  echo "Skipping..."
+  ;;
+*)
+  ./install_vscode.sh
+  ;;
+
+esac
 
 # Turning off online wait service
 echo "Turning off online wait service..."
@@ -205,10 +221,34 @@ echo "Done..."
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables..."
-echo "export CONFIG_PATH=$CONFIG_PATH" >>$PWD/.zshrc
-echo "export MEDIA_PATH=$MEDIA_PATH" >>$PWD/.zshrc
-echo "export SSD_PATH=$SSD_PATH" >>$PWD/.zshrc
-echo "export JBOD_PATH=$JBOD_PATH" >>$PWD/.zshrc
+# Check if envs are already in the config file
+if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/environment; then
+  echo "CONFIG_PATH is already in the config file"
+else
+  echo "Adding CONFIG_PATH to the config file..."
+  echo "CONFIG_PATH=$CONFIG_PATH" | tee -a /etc/environment
+fi
+
+if grep -Fxq "MEDIA_PATH=$MEDIA_PATH" /etc/environment; then
+  echo "MEDIA_PATH is already in the config file"
+else
+  echo "Adding MEDIA_PATH to the config file..."
+  echo "MEDIA_PATH=$MEDIA_PATH" | tee -a /etc/environment
+fi
+
+if grep -Fxq "SSD_PATH=$SSD_PATH" /etc/environment; then
+  echo "SSD_PATH is already in the config file"
+else
+  echo "Adding SSD_PATH to the config file..."
+  echo "SSD_PATH=$SSD_PATH" | tee -a /etc/environment
+fi
+
+if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/environment; then
+  echo "JBOD_PATH is already in the config file"
+else
+  echo "Adding JBOD_PATH to the config file..."
+  echo "JBOD_PATH=$JBOD_PATH" | tee -a /etc/environment
+fi
 echo "Done..."
 
 # Install dependencies
