@@ -64,6 +64,10 @@ else
     echo "Done..."
 fi
 
+# Install VS Code
+echo "Installing VS Code..."
+./vscode-install.sh
+
 # Make upload_acme.sh executable
 chmod +x ~/Proxy/upload_acme.sh
 
