@@ -13,6 +13,11 @@ The following environment variables are used in this script:
 
 ### Running the Script
 To use this script, simply run the following command:
+#### On Main Machine
 ```
 git clone https://github.com/ThePhaseless/MyPostInstall.git && cd MyPostInstall && chmod +x install.sh && ./install.sh
+```
+#### On Proxy Machine
+```
+git clone https://github.com/ThePhaseless/MyPostInstall.git && cd MyPostInstall && chmod +x proxy-install.sh && ./proxy-install.sh
 ```

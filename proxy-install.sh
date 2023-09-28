@@ -42,7 +42,13 @@ echo "Done..."
 echo "Adding upload_acme.sh to crontab..."
 (
     crontab -l 2>/dev/null
-    echo "0 0 * * * ~/Proxy/upload_acme.sh"
+    echo "0 4 * * * ~/Proxy/upload_acme.sh"
 ) | crontab -
+echo "Done..."
 
 docker-compose -f ~/Proxy/docker-compose.yml up -d
+
+echo "Done..."
+echo "Proxy setup complete! Don't forget to upload your acme.json file to server after the first certificate is generated."
+echo "You can do this by running the following command:"
+echo "~/Proxy/upload_acme.sh --force"
