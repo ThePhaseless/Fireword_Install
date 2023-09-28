@@ -14,18 +14,28 @@ if [ ! -d "$PWD/.git" ]; then
     exit
 fi
 
-# Install Tailscale
-echo "Installing Tailscale..."
-curl -fsSL https://tailscale.com/install.sh | sh
-echo "Done..."
-sudo tailscale up
+# Test if TailScale is installed, if not install
+if ! [ -x "$(command -v tailscale)" ]; then
+    # Install Tailscale
+    echo "Installing Tailscale..."
+    curl -fsSL https://tailscale.com/install.sh | sh
+    echo "Done..."
+    sudo tailscale up
+else
+    echo "Tailscale already installed..."
+fi
 
-# Install Docker
-echo "Installing Docker and Docker Compose..."
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-rm get-docker.sh
-echo "Done..."
+# Test if Docker is installed, if not install
+if ! [ -x "$(command -v docker)" ]; then
+    # Install Docker
+    echo "Installing Docker and Docker Compose..."
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
+    rm get-docker.sh
+    echo "Done..."
+else
+    echo "Docker already installed..."
+fi
 
 # Copy proxy files
 echo "Copying proxy config files..."
@@ -40,13 +50,22 @@ echo "Copying upload_acme.sh..."
 cp ./upload_acme.sh ~/Proxy/upload_acme.sh
 echo "Done..."
 
-echo "Adding upload_acme.sh to crontab..."
-(
-    crontab -l 2>/dev/null
-    echo "0 4 * * * ~/Proxy/upload_acme.sh"
-) | crontab -
-echo "Done..."
+# Check if upload_acme is in crontab, if not add it
+if crontab -l | grep -q 'upload_acme.sh'; then
+    echo "upload_acme.sh already in crontab..."
+else
+    echo "Adding upload_acme.sh to crontab..."
+    (
+        crontab -l 2>/dev/null
+        echo "0 4 * * * ~/Proxy/upload_acme.sh"
+    ) | crontab -
+    echo "Done..."
+fi
 
+# Make upload_acme.sh executable
+chmod +x ~/Proxy/upload_acme.sh
+
+# Start proxy
 docker-compose -f ~/Proxy/docker-compose.yml up -d
 
 echo "Done..."
