@@ -10,7 +10,7 @@ if [ "$(uname -m)" = "x86_64" ]; then
     architecture="x64"
 
 elif [ "$(uname -m)" = "aarch64" ]; then
-    echo "Architecture is armv7l..."
+    echo "Architecture is arm64..."
     architecture="arm64"
 
 else
@@ -26,25 +26,9 @@ rm vscode_cli.tar.gz
 echo "Moving VSCode CLI to /usr/local/bin..."
 sudo mv ./code /usr/local/bin/code
 
-# Set permissions
-echo "Setting permissions..."
-sudo chmod 777 /usr/local/bin/code
-
-# Install service
-echo "Installing VSCode service..."
-sudo cp ./code.service /etc/systemd/system/code.service
-
-# Reload services
-echo "Reloading services..."
-sudo systemctl daemon-reload
-
-# Enable service
-echo "Enabling VSCode service..."
-sudo systemctl enable code.service
-
-# Start service
-echo "Starting VSCode service..."
-sudo systemctl start code.service
+# Install vscode tunnel service
+echo "Installing VSCode Tunnel Service..."
+code tunnel service install
 
 # Done
 echo "Done..."
