@@ -11,6 +11,7 @@ services:
     image: traefik:latest
     # Enables the web UI and tells Traefik to listen to docker
     command:
+      - "--api.dashboard=true"
       - "--api=true"
       - "--providers.docker"
       - "--entrypoints.websecure.address=:443"
