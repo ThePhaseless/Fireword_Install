@@ -14,6 +14,8 @@ if [ ! -d "$PWD/.git" ]; then
     exit
 fi
 
+script_dir=$PWD
+
 # Test if TailScale is installed, if not install
 if ! [ -x "$(command -v tailscale)" ]; then
     # Install Tailscale
@@ -30,7 +32,7 @@ if ! [ -x "$(command -v docker)" ]; then
     # Install Docker
     echo "Installing Docker and Docker Compose..."
     curl -fsSL https://get.docker.com -o get-docker.sh
-    sh get-docker.sh
+    sudo sh get-docker.sh
     rm get-docker.sh
     echo "Done..."
 else
@@ -65,8 +67,15 @@ fi
 # Make upload_acme.sh executable
 chmod +x ~/Proxy/upload_acme.sh
 
+cd ~/Proxy
+
+# Ask user to fill out proxy.env
+echo "Please fill out the proxy.env file in ~/Proxy/.env"
+echo "You can press CTRL+Z to exit the editor and continue the script with fg and pressing enter"
+echo "Press any key to continue..."
+
 # Start proxy
-sudo docker compose -f ~/Proxy/docker-compose.yml up -d
+sudo docker compose up -d
 
 echo "Done..."
 echo "Proxy setup complete! Don't forget to upload your acme.json file to server after the first certificate is generated."
