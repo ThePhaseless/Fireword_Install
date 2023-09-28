@@ -29,6 +29,7 @@ echo "Done..."
 
 # Copy proxy files
 echo "Copying proxy config files..."
+mkdir -p ~/Proxy/Traefik/config
 cp ./"Traefik Proxy"/* ~/Proxy/Traefik/config
 cp ./proxy.env ~/Proxy/.env
 cp ./proxy-compose.yml ~/Proxy/docker-compose.yml
