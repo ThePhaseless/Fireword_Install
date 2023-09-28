@@ -85,9 +85,20 @@ echo "Done..."
 sudo apt update
 sudo apt upgrade -y
 
-# Run create_JBOD.sh
-echo "Running create_JBOD.sh..."
-bash create_JBOD.sh
+# Ask if the user wants to make a JBOD with raid0 or mergerfs or none
+echo "Do you want to setup a disk array?\n 1) RAID0\n 2) MergerFS\n 3) None"
+read -p "Choice: " choice
+case $choice in
+[1]*)
+  bash raid0.sh
+  ;;
+[2]*)
+  bash mergerfs.sh
+  ;;
+*)
+  echo "Skipping..."
+  ;;
+esac
 
 # Install Zsh and Oh-My-Zsh
 sudo apt install git zsh -y
