@@ -22,10 +22,9 @@ services:
       - "--global.sendAnonymousUsage=true"
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
-      - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.storage=/config/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
-      - CF_API_EMAIL=${CF_API_EMAIL}
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
       - PROXY_HOSTNAME=${PROXY_HOSTNAME}
       - TARGET_IP=${TARGET_IP}
@@ -39,11 +38,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./Traefik/acme.json:/acme.json
       - ./Traefik/config:/config
-    labels:
-      - traefik.http.routers.proxy.tls=true
-      - traefik.http.routers.proxy.tls.certresolver=cloudflare
-      - traefik.http.routers.proxy.tls.domains[0].main=fireword.xyz
-      - traefik.http.routers.proxy.tls.domains[0].sans=*.fireword.xyz
   authelia:
     container_name: authelia
     image: authelia/authelia:latest
