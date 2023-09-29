@@ -151,7 +151,7 @@ case $answer in
   echo "Skipping..."
   ;;
 *)
-  sudo ./install-vscode.sh
+  ./install-vscode.sh
   ;;
 
 esac
