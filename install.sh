@@ -266,6 +266,13 @@ sudo sh get-docker.sh
 rm get-docker.sh
 echo "Done..."
 
+# Add user to docker group
+echo "Adding user to docker group..."
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+echo "Done..."
+
 # Pull and run Portainer
 echo "Pulling and running Portainer..."
 sudo docker volume create portainer_data
