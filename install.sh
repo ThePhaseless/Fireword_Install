@@ -259,14 +259,17 @@ echo "Installing dependencies..."
 sudo apt install curl rsync btop -y
 echo "Done..."
 
-# Check if docker is already installed
-if [ -x $(command -v docker) ]; then
-  # Install Docker
-  echo "Installing Docker and Docker Compose..."
+# Check if docker is not already installed, install it
+# curl -fsSL https://get.docker.com -o get-docker.sh
+# sudo sh get-docker.sh
+if ! command -v docker &>/dev/null; then
+  echo "Installing docker..."
   curl -fsSL https://get.docker.com -o get-docker.sh
   sudo sh get-docker.sh
   rm get-docker.sh
   echo "Done..."
+else
+  echo "Docker is already installed"
 fi
 
 # Add user to docker group
