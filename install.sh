@@ -260,7 +260,7 @@ sudo apt install curl rsync btop -y
 echo "Done..."
 
 # Check if docker is already installed
-if [ -x "$(command -v docker)" ]; then
+if [ -x $(command -v docker) ]; then
   # Install Docker
   echo "Installing Docker and Docker Compose..."
   curl -fsSL https://get.docker.com -o get-docker.sh
