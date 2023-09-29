@@ -164,7 +164,7 @@ echo "Done..."
 # Fix Wifi, add renderer: NetworkManager to /etc/netplan/00-installer-config.yaml after version: 2
 echo "Fixing Wifi..."
 sudo apt install network-manager -y
-sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
+sudo sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
@@ -198,7 +198,7 @@ HDD_SAMBA_SHARE="[HDD]\n
 if grep -Fxq "$HDD_SAMBA_SHARE" /etc/samba/smb.conf; then
   echo "HDD_SAMBA_SHARE is already in the config file"
 else
-  printf "$HDD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
+  printf "$HDD_SAMBA_SHARE" | sudo tee -a /etc/samba/smb.conf
 fi
 
 # Add SSD_SAMBA_SHARE to config file
@@ -215,7 +215,7 @@ SSD_SAMBA_SHARE="[SSD]\n
 if grep -Fxq "$SSD_SAMBA_SHARE" /etc/samba/smb.conf; then
   echo "SSD_SAMBA_SHARE is already in the config file"
 else
-  printf "$SSD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
+  printf "$SSD_SAMBA_SHARE" | sudo tee -a /etc/samba/smb.conf
 fi
 
 echo "Restarting SAMBA..."
@@ -225,28 +225,28 @@ echo "Done..."
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables..."
 # Check if envs are already in the config file
-if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/environment; then
+if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/environment; then
   echo "CONFIG_PATH is already in the config file"
 else
   echo "Adding CONFIG_PATH to the config file..."
   echo "CONFIG_PATH=$CONFIG_PATH" | tee -a /etc/environment
 fi
 
-if grep -Fxq "MEDIA_PATH=$MEDIA_PATH" /etc/environment; then
+if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/environment; then
   echo "MEDIA_PATH is already in the config file"
 else
   echo "Adding MEDIA_PATH to the config file..."
   echo "MEDIA_PATH=$MEDIA_PATH" | tee -a /etc/environment
 fi
 
-if grep -Fxq "SSD_PATH=$SSD_PATH" /etc/environment; then
+if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/environment; then
   echo "SSD_PATH is already in the config file"
 else
   echo "Adding SSD_PATH to the config file..."
   echo "SSD_PATH=$SSD_PATH" | tee -a /etc/environment
 fi
 
-if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/environment; then
+if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/environment; then
   echo "JBOD_PATH is already in the config file"
 else
   echo "Adding JBOD_PATH to the config file..."
