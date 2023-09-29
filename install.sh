@@ -148,7 +148,7 @@ case $answer in
   echo "Skipping..."
   ;;
 *)
-  ./install_vscode.sh
+  ./install-vscode.sh
   ;;
 
 esac
