@@ -229,28 +229,28 @@ if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/environment; then
   echo "CONFIG_PATH is already in the config file"
 else
   echo "Adding CONFIG_PATH to the config file..."
-  echo "CONFIG_PATH=$CONFIG_PATH" | tee -a /etc/environment
+  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/environment
 fi
 
 if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/environment; then
   echo "MEDIA_PATH is already in the config file"
 else
   echo "Adding MEDIA_PATH to the config file..."
-  echo "MEDIA_PATH=$MEDIA_PATH" | tee -a /etc/environment
+  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/environment
 fi
 
 if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/environment; then
   echo "SSD_PATH is already in the config file"
 else
   echo "Adding SSD_PATH to the config file..."
-  echo "SSD_PATH=$SSD_PATH" | tee -a /etc/environment
+  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/environment
 fi
 
 if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/environment; then
   echo "JBOD_PATH is already in the config file"
 else
   echo "Adding JBOD_PATH to the config file..."
-  echo "JBOD_PATH=$JBOD_PATH" | tee -a /etc/environment
+  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/environment
 fi
 echo "Done..."
 
