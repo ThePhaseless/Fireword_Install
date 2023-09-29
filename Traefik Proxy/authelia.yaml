@@ -9,10 +9,7 @@ http:
           - "Remote-Groups"
           - "Remote-Email"
           - "Remote-Name"
-        tls:
-          ca: /certificates/ca.public.crt
-          cert: /certificates/traefik.public.crt
-          key: /certificates/traefik.private.pem
+
   routers:
     authelia-router:
       rule: 'Host(`auth.{{ env "PROXY_HOSTNAME" }}`)'
@@ -26,4 +23,4 @@ http:
     authelia-service:
       loadBalancer:
         servers:
-          - url: "http://authelia:1212"
+          - url: "http://authelia:9091"
