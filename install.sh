@@ -93,10 +93,10 @@ echo "other) None"
 read -p "Choice: " choice
 case $choice in
 [1]*)
-  sudo bash ./raid0.sh
+  sudo bash ./create_raid0.sh
   ;;
 [2]*)
-  sudo bash ./mergerfs.sh
+  sudo bash ./create_mergerfs.sh
   ;;
 *)
   echo "Skipping..."
