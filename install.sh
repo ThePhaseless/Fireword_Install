@@ -151,7 +151,7 @@ case $answer in
   echo "Skipping..."
   ;;
 *)
-  ./install-vscode.sh
+  sudo ./install-vscode.sh
   ;;
 
 esac
@@ -181,7 +181,7 @@ echo "Done..."
 
 # Preparing SAMBA
 echo "Preparing SAMBA..."
-apt install samba wsdd -y
+sudo apt install samba wsdd -y
 
 echo "Creating SAMBA shares..."
 # Add HDD_SAMBA_SHARE to config file
@@ -219,7 +219,7 @@ else
 fi
 
 echo "Restarting SAMBA..."
-systemctl restart smbd
+sudo systemctl restart smbd
 echo "Done..."
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
@@ -256,7 +256,7 @@ echo "Done..."
 
 # Install dependencies
 echo "Installing dependencies..."
-apt install curl rsync btop -y
+sudo apt install curl rsync btop -y
 echo "Done..."
 
 # Install Docker
@@ -268,8 +268,8 @@ echo "Done..."
 
 # Pull and run Portainer
 echo "Pulling and running Portainer..."
-docker volume create portainer_data
-docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_PATH/Portainer:/data portainer/portainer-ce
+sudo docker volume create portainer_data
+sudo docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_PATH/Portainer:/data portainer/portainer-ce
 echo "Done..."
 
 # Allow for sudo without password
@@ -279,16 +279,16 @@ echo "Done..."
 
 # Install screen_off.service
 echo "Installing screen-off.service..."
-cp screen-off.service /etc/systemd/system
-cp screen-off.sh $CONFIG_PATH
+sudo cp screen-off.service /etc/systemd/system
+sudo cp screen-off.sh $CONFIG_PATH
 sudo chmod +x $CONFIG_PATH/screen-off.sh
 sudo chmod +x /etc/systemd/system/screen-off.service
-systemctl enable screen-off.service
+sudo systemctl enable screen-off.service
 echo "Done..."
 
 # Clean up unnecessary packages
 echo "Cleaning up unnecessary packages..."
-apt autoremove -y
+sudo apt autoremove -y
 echo "Done..."
 
 # Ask the user if scirpt folder should be deleted
