@@ -86,7 +86,10 @@ sudo apt update
 sudo apt upgrade -y
 
 # Ask if the user wants to make a JBOD with raid0 or mergerfs or none
-echo "Do you want to setup a disk array?\n 1) RAID0\n 2) MergerFS\n 3) None"
+echo "Do you want to setup a disk array?"
+echo "1) RAID0"
+echo "2) MergerFS"
+echo "other) None"
 read -p "Choice: " choice
 case $choice in
 [1]*)
