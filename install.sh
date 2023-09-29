@@ -109,7 +109,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # Download ZSH config
 echo "Downloading ZSH config..."
-curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o $CONFIG_PATH/.zshrc
+curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o ~/.zshrc
 echo "Done..."
 
 # Set Zsh as the default shell
@@ -262,7 +262,7 @@ echo "Done..."
 # Install Docker
 echo "Installing Docker and Docker Compose..."
 curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+sudo sh get-docker.sh
 rm get-docker.sh
 echo "Done..."
 
