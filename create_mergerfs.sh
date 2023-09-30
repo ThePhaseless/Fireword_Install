@@ -9,6 +9,33 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# Check if mergerfs is installed
+if ! command -v mergerfs &>/dev/null; then
+    echo "mergerfs is not installed"
+    echo "Do you want to install mergerfs? (Y/n)"
+    read -p "Answer: " answer
+    case $answer in
+    *)
+        # Ask user for link for mergerfs
+        echo "Please provide a link to the mergerfs deb file"
+        read -p "Link: " link
+
+        # Download mergerfs
+        echo "Downloading mergerfs..."
+        wget -O mergerfs.deb $link
+
+        # Install mergerfs
+        echo "Installing mergerfs..."
+        dpkg -i mergerfs.deb
+
+        # Remove mergerfs.deb
+        echo "Removing mergerfs.deb..."
+        rm mergerfs.deb
+        ;;
+    [Nn] | no) echo "Canceling..." && exit 1 ;;
+    esac
+fi
+
 # Check if disks are valid
 if [ -z "$JBOD_PATH" ]; then
     echo "JBOD_PATH = $JBOD_PATH"
