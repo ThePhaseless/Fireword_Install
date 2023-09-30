@@ -1,4 +1,10 @@
 #!/bin/bash
+# Run as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root"
+    exit 1
+fi
+
 # Preparing SAMBA
 echo "Preparing SAMBA..."
 sudo apt install samba wsdd -y
