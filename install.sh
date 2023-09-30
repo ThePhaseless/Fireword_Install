@@ -36,6 +36,62 @@ if [ -z "$MEDIA_PATH" ]; then
   default=True
 fi
 
+# Ask the user if the default environment variables should be used
+if [ "$default" = True ]; then
+  echo "The default environment variables are:"
+  echo "SSD_PATH=$SSD_PATH"
+  echo "JBOD_PATH=$JBOD_PATH"
+  echo "CONFIG_PATH=$CONFIG_PATH"
+  echo "MEDIA_PATH=$MEDIA_PATH"
+  read -p "Do you want to use the default environment variables? (Y/n) " answer
+  case $answer in
+  [Nn]*)
+    echo "Please set the environment variables and run the script again"
+    exit
+    ;;
+  *) ;;
+  esac
+fi
+
+# Create settings.sh
+echo "Creating settings.sh..."
+mkdir /etc/profile.d
+sudo touch /etc/profile.d/settings.sh
+sudo chmod +x /etc/profile.d/settings.sh
+echo "Done..."
+
+# Add CONFIG_PATH and MEDIA_PATH to environment variables
+echo "Adding environment variables..."
+# Check if envs are already in the config file
+if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/profile.d/settings.sh; then
+  echo "CONFIG_PATH is already in the config file"
+else
+  echo "Adding CONFIG_PATH to the config file..."
+  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/profile.d/settings.sh
+fi
+
+if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/profile.d/settings.sh; then
+  echo "MEDIA_PATH is already in the config file"
+else
+  echo "Adding MEDIA_PATH to the config file..."
+  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/profile.d/settings.sh
+fi
+
+if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/profile.d/settings.sh; then
+  echo "SSD_PATH is already in the config file"
+else
+  echo "Adding SSD_PATH to the config file..."
+  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/profile.d/settings.sh
+fi
+
+if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/profile.d/settings.sh; then
+  echo "JBOD_PATH is already in the config file"
+else
+  echo "Adding JBOD_PATH to the config file..."
+  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/profile.d/settings.sh
+fi
+echo "Done..."
+
 echo "Preparing directories..."
 # Create directories
 echo "Creating directories..."
@@ -58,23 +114,6 @@ sudo chown nobody:nogroup $JBOD_PATH -R
 sudo chown nobody:nogroup $SSD_PATH -R
 sudo chown nobody:nogroup $CONFIG_PATH -R
 echo "Done..."
-
-# Ask the user if the default environment variables should be used
-if [ "$default" = True ]; then
-  echo "The default environment variables are:"
-  echo "SSD_PATH=$SSD_PATH"
-  echo "JBOD_PATH=$JBOD_PATH"
-  echo "CONFIG_PATH=$CONFIG_PATH"
-  echo "MEDIA_PATH=$MEDIA_PATH"
-  read -p "Do you want to use the default environment variables? (Y/n) " answer
-  case $answer in
-  [Nn]*)
-    echo "Please set the environment variables and run the script again"
-    exit
-    ;;
-  *) ;;
-  esac
-fi
 
 # Set up Timezone
 echo "Setting up Timezone..."
@@ -182,38 +221,6 @@ echo "Done..."
 # Install samba
 ./setup_samba.sh
 
-# Add CONFIG_PATH and MEDIA_PATH to environment variables
-echo "Adding environment variables..."
-# Check if envs are already in the config file
-if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/environment; then
-  echo "CONFIG_PATH is already in the config file"
-else
-  echo "Adding CONFIG_PATH to the config file..."
-  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/environment
-fi
-
-if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/environment; then
-  echo "MEDIA_PATH is already in the config file"
-else
-  echo "Adding MEDIA_PATH to the config file..."
-  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/environment
-fi
-
-if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/environment; then
-  echo "SSD_PATH is already in the config file"
-else
-  echo "Adding SSD_PATH to the config file..."
-  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/environment
-fi
-
-if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/environment; then
-  echo "JBOD_PATH is already in the config file"
-else
-  echo "Adding JBOD_PATH to the config file..."
-  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/environment
-fi
-echo "Done..."
-
 # Install dependencies
 echo "Installing dependencies..."
 sudo apt install curl rsync btop -y
@@ -250,6 +257,10 @@ sudo cp screen-off.service /etc/systemd/system
 sudo cp screen-off.sh $CONFIG_PATH
 sudo chmod +x $CONFIG_PATH/screen-off.sh
 sudo chmod +x /etc/systemd/system/screen-off.service
+
+# Change $CONFIG_PATH to the actual path
+sudo sed -i "s|CONFIG_PATH|$CONFIG_PATH|g" /etc/systemd/system/screen-off.service
+
 sudo systemctl enable screen-off.service
 echo "Done..."
 
