@@ -180,7 +180,7 @@ fi
 echo "Done..."
 
 # Install samba
-./setup_samba.sh
+sudo bash ./setup_samba.sh
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables..."
