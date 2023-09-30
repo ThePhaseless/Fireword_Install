@@ -179,50 +179,8 @@ else
 fi
 echo "Done..."
 
-# Preparing SAMBA
-echo "Preparing SAMBA..."
-sudo apt install samba wsdd -y
-
-echo "Creating SAMBA shares..."
-# Add HDD_SAMBA_SHARE to config file
-HDD_SAMBA_SHARE="\n
-[HDD]
-    path = $JBOD_PATH
-    acl support = yes
-    read only = no
-    guest ok = yes
-    browsable = yes
-    writeable = yes
-    public = yes"
-# Check if the HDD_SAMBA_SHARE is already in the config file and add it if not
-if grep -Fxq "[HDD]" /etc/samba/smb.conf; then
-  echo "HDD_SAMBA_SHARE is already in the config file"
-else
-  echo "Adding HDD_SAMBA_SHARE to the config file..."
-  echo -e $HDD_SAMBA_SHARE | sudo tee -a /etc/samba/smb.conf
-fi
-
-# Add SSD_SAMBA_SHARE to config file
-SSD_SAMBA_SHARE="\n
-[SSD]
-    path = $SSD_PATH
-    acl support = yes
-    read only = no
-    guest ok = yes
-    browsable = yes
-    writeable = yes
-    public = yes"
-# Check if the SSD_SAMBA_SHARE is already in the config file and add it if not
-if grep -Fxq "[SSD]" /etc/samba/smb.conf; then
-  echo "SSD_SAMBA_SHARE is already in the config file"
-else
-  echo "Adding SSD_SAMBA_SHARE to the config file..."
-  echo -e $SSD_SAMBA_SHARE | sudo tee -a /etc/samba/smb.conf
-fi
-
-echo "Restarting SAMBA..."
-sudo systemctl restart smbd
-echo "Done..."
+# Install samba
+./setup_samba.sh
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables..."
@@ -279,12 +237,6 @@ echo "Adding user to docker group..."
 sudo groupadd docker
 echo "Adding $USER to docker group..."
 sudo usermod -aG docker $USER
-echo "Done..."
-
-# Pull and run Portainer
-echo "Pulling and running Portainer..."
-docker volume create portainer_data
-docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_PATH/Portainer:/data portainer/portainer-ce
 echo "Done..."
 
 # Allow for sudo without password
