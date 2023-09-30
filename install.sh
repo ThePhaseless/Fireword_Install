@@ -320,3 +320,6 @@ esac
 
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now"
+
+echo "Refreshing groups..."
+newgrp docker
