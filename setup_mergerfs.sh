@@ -149,7 +149,6 @@ done
 
 # Create MergerFS
 mergerfs_options="defaults,nonempty,cache.files=partial,moveonenospc=true,category.create=mfs,dropcacheonclose=true,fsname=mergerfs"
-mergerfs -o $mergerfs_options /mnt/disk* $JBOD_PATH
 
 # If without --test then add to fstab
 if [ "$1" != "--test" ]; then
@@ -165,4 +164,8 @@ if [ "$1" != "--test" ]; then
         systemctl daemon-reload
     fi
 fi
+
+# Applying mounts
+echo "Applying mounts..."
+mount -a
 echo "Done..."

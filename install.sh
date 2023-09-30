@@ -219,7 +219,7 @@ fi
 echo "Done..."
 
 # Install samba
-./setup_samba.sh
+sudo bash ./setup_samba.sh
 
 # Install dependencies
 echo "Installing dependencies..."
