@@ -53,45 +53,6 @@ if [ "$default" = True ]; then
   esac
 fi
 
-# Create settings.sh
-echo "Creating settings.sh..."
-mkdir /etc/profile.d
-sudo touch /etc/profile.d/settings.sh
-sudo chmod +x /etc/profile.d/settings.sh
-echo "Done..."
-
-# Add CONFIG_PATH and MEDIA_PATH to environment variables
-echo "Adding environment variables..."
-# Check if envs are already in the config file
-if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/profile.d/settings.sh; then
-  echo "CONFIG_PATH is already in the config file"
-else
-  echo "Adding CONFIG_PATH to the config file..."
-  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/profile.d/settings.sh
-fi
-
-if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/profile.d/settings.sh; then
-  echo "MEDIA_PATH is already in the config file"
-else
-  echo "Adding MEDIA_PATH to the config file..."
-  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/profile.d/settings.sh
-fi
-
-if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/profile.d/settings.sh; then
-  echo "SSD_PATH is already in the config file"
-else
-  echo "Adding SSD_PATH to the config file..."
-  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/profile.d/settings.sh
-fi
-
-if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/profile.d/settings.sh; then
-  echo "JBOD_PATH is already in the config file"
-else
-  echo "Adding JBOD_PATH to the config file..."
-  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/profile.d/settings.sh
-fi
-echo "Done..."
-
 echo "Preparing directories..."
 # Create directories
 echo "Creating directories..."
@@ -149,6 +110,38 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Download ZSH config
 echo "Downloading ZSH config..."
 curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o ~/.zshrc
+echo "Done..."
+
+# Add CONFIG_PATH and MEDIA_PATH to environment variables
+echo "Adding environment variables..."
+# Check if envs are already in the config file
+if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/zsh/zprofile; then
+  echo "CONFIG_PATH is already in the config file"
+else
+  echo "Adding CONFIG_PATH to the config file..."
+  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/zsh/zprofile; then
+  echo "MEDIA_PATH is already in the config file"
+else
+  echo "Adding MEDIA_PATH to the config file..."
+  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/zsh/zprofile; then
+  echo "SSD_PATH is already in the config file"
+else
+  echo "Adding SSD_PATH to the config file..."
+  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/zsh/zprofile; then
+  echo "JBOD_PATH is already in the config file"
+else
+  echo "Adding JBOD_PATH to the config file..."
+  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
 echo "Done..."
 
 # Set Zsh as the default shell
