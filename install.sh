@@ -93,10 +93,10 @@ echo "other) None"
 read -p "Choice: " choice
 case $choice in
 [1]*)
-  sudo bash ./create_raid0.sh
+  sudo bash ./setup_RAID0.sh
   ;;
 [2]*)
-  sudo bash ./create_mergerfs.sh
+  sudo bash ./setup_mergerfs.sh
   ;;
 *)
   echo "Skipping..."
@@ -151,7 +151,7 @@ case $answer in
   echo "Skipping..."
   ;;
 *)
-  ./install-vscode.sh
+  bash ./setup_vscode.sh
   ;;
 
 esac
@@ -272,6 +272,6 @@ esac
 
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now"
-
+echo "To setup Portainer, run setup_portainer.sh"
 echo "Refreshing groups..."
 newgrp docker
