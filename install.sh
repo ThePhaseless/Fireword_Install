@@ -115,32 +115,39 @@ echo "Done..."
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables..."
 # Check if envs are already in the config file
-if grep -Fxq "export CONFIG_PATH $CONFIG_PATH" /etc/zsh/zprofile; then
+if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/zsh/zprofile; then
   echo "CONFIG_PATH is already in the config file"
 else
   echo "Adding CONFIG_PATH to the config file..."
-  echo "export CONFIG_PATH $CONFIG_PATH" | sudo tee -a /etc/zsh/zprofile
+  echo "CONFIG_PATH=$CONFIG_PATH" | sudo tee -a /etc/zsh/zprofile
 fi
 
-if grep -Fxq "export MEDIA_PATH $MEDIA_PATH" /etc/zsh/zprofile; then
+if grep -Fxq "HOSTNAME=$HOSTNAME" /etc/zsh/zprofile; then
+  echo "HOSTNAME is already in the config file"
+else
+  echo "Adding HOSTNAME to the config file..."
+  echo "HOSTNAME=$HOSTNAME" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "MEDIA_PATH=$MEDIA_PATH" /etc/zsh/zprofile; then
   echo "MEDIA_PATH is already in the config file"
 else
   echo "Adding MEDIA_PATH to the config file..."
-  echo "export MEDIA_PATH $MEDIA_PATH" | sudo tee -a /etc/zsh/zprofile
+  echo "MEDIA_PATH=$MEDIA_PATH" | sudo tee -a /etc/zsh/zprofile
 fi
 
-if grep -Fxq "export SSD_PATH $SSD_PATH" /etc/zsh/zprofile; then
+if grep -Fxq "SSD_PATH=$SSD_PATH" /etc/zsh/zprofile; then
   echo "SSD_PATH is already in the config file"
 else
   echo "Adding SSD_PATH to the config file..."
-  echo "export SSD_PATH $SSD_PATH" | sudo tee -a /etc/zsh/zprofile
+  echo "SSD_PATH=$SSD_PATH" | sudo tee -a /etc/zsh/zprofile
 fi
 
-if grep -Fxq "export JBOD_PATH $JBOD_PATH" /etc/zsh/zprofile; then
+if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/zsh/zprofile; then
   echo "JBOD_PATH is already in the config file"
 else
   echo "Adding JBOD_PATH to the config file..."
-  echo "export JBOD_PATH $JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
+  echo "JBOD_PAT= $JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
 fi
 echo "Done..."
 
