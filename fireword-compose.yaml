@@ -1,13 +1,21 @@
 version: "3.8"
 name: fireword
 services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    user: 1000:1000
+    volumes:
+      - ${CONFIG_PATH}/Recyclarr:/config
+    environment:
+      - TZ=America/Santiago
   reiverr:
     image: ghcr.io/aleksilassila/reiverr:latest
     container_name: reiverr
     ports:
       - 9494:9494
     volumes:
-      - /path/to/appdata/config:/config
+      - ${CONFIG_PATH}/Reiverr:/config
     restart: unless-stopped
 
   httpd:
