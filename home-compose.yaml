@@ -8,7 +8,7 @@ services:
       PUID: 1000
       PGID: 1000
     ports:
-      - 1111:3000
+      - 4000:3000
     volumes:
       - ${CONFIG_PATH}/HomePage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
@@ -19,7 +19,7 @@ services:
   pufferpanel:
     container_name: pufferpanel
     ports:
-      - "2222:8080"
+      - "8080:8080"
       - "5657:5657"
       - "25565:25565"
     volumes:
@@ -57,7 +57,7 @@ services:
       - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
     environment:
       - PROXY_HOSTNAME=${PROXY_HOSTNAME}
-      - TARGET_IP=192.168.1.10
+      - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
       - "80:80"
@@ -85,7 +85,7 @@ services:
       - "${CONFIG_PATH}/AdGuard/conf:/opt/adguardhome/conf"
     ports:
       - "53:53" # DNS
-      - "4444:3000/tcp" # WebUI
+      - "3000:3000/tcp" # WebUI
 
   scanservjs:
     image: "sbs20/scanservjs:latest"

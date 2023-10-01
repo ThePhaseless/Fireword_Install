@@ -2,14 +2,17 @@ http:
   middlewares:
     authelia:
       forwardAuth:
-        address: https://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.{{ env "PROXY_HOSTNAME" }}%2F
+        address: http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.{{ env "PROXY_HOSTNAME" }}%2F
         trustForwardHeader: true
         authResponseHeaders:
           - "Remote-User"
           - "Remote-Groups"
           - "Remote-Email"
           - "Remote-Name"
+<<<<<<< HEAD
+=======
 
+>>>>>>> 9d055ecd01aaa7e5ea20e6f5476850b55679df97
   routers:
     authelia-router:
       rule: 'Host(`auth.{{ env "PROXY_HOSTNAME" }}`)'
