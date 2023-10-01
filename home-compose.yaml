@@ -82,7 +82,8 @@ services:
       - "${CONFIG_PATH}/AdGuard/work:/opt/adguardhome/work"
       - "${CONFIG_PATH}/AdGuard/conf:/opt/adguardhome/conf"
     ports:
-      - "53:53" # DNS
+      - "53:53/tcp" # DNS
+      - "53:53/udp" # DNS
       - "82:80" # WebUI
       - "3000:3000/tcp" # Setup
 
