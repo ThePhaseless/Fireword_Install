@@ -54,7 +54,7 @@ services:
       - "--global.sendAnonymousUsage=true"
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
-      - "--certificatesResolvers.cloudflare.acme.storage=/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
     environment:
       - PROXY_HOSTNAME=${PROXY_HOSTNAME}
       - TARGET_IP=${TARGET_IP}
@@ -65,7 +65,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${CONFIG_PATH}/Traefik/acme.json:/acme.json
+      - ${CONFIG_PATH}/Traefik/cert:/cert
       - ${CONFIG_PATH}/Traefik/config:/config
       # - ./traefik.yaml:/etc/traefik/traefik.yaml
     labels:
