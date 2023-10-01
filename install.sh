@@ -147,7 +147,7 @@ if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/zsh/zprofile; then
   echo "JBOD_PATH is already in the config file"
 else
   echo "Adding JBOD_PATH to the config file..."
-  echo "JBOD_PAT= $JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
+  echo "JBOD_PAT=$JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
 fi
 echo "Done..."
 
