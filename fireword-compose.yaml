@@ -14,7 +14,7 @@ services:
     image: httpd:latest
     container_name: httpd
     ports:
-      - "1212:80"
+      - "81:80"
     volumes:
       - ${CONFIG_PATH}/Httpd:/usr/local/apache2/htdocs
     restart: unless-stopped
@@ -22,7 +22,6 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
-
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -73,7 +72,7 @@ services:
       - ${CONFIG_PATH}/Readarr:/config
       - ${MEDIA_PATH}:/data #optional
     ports:
-      - 5656:8787
+      - 8787:8787
     restart: unless-stopped
 
   prowlarr:
@@ -86,7 +85,7 @@ services:
     volumes:
       - ${CONFIG_PATH}/Prowlarr:/config
     ports:
-      - 2323:9696
+      - 9696:9696
     restart: unless-stopped
 
   qbittorrent:
@@ -110,10 +109,9 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - LOG_LEVEL=debug
       - TZ=${TIMEZONE}
     ports:
-      - 4545:5055
+      - 5055:5055
     volumes:
       - ${CONFIG_PATH}/Jellyseerr:/app/config
     restart: unless-stopped
