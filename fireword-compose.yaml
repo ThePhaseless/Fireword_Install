@@ -92,7 +92,7 @@ services:
   qbittorrent:
     container_name: qBittorrent
     restart: unless-stopped
-    image: cr.hotio.dev/hotio/qbittorrent:latest
+    image: ghcr.io/hotio/qbittorrent:latest
     ports:
       - 3434:8080
     environment:
