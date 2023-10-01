@@ -83,7 +83,8 @@ services:
       - "${CONFIG_PATH}/AdGuard/conf:/opt/adguardhome/conf"
     ports:
       - "53:53" # DNS
-      - "3000:3000/tcp" # WebUI
+      - "82:80" # WebUI
+      - "3000:3000/tcp" # Setup
 
   scanservjs:
     image: "sbs20/scanservjs:latest"
