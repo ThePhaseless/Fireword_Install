@@ -3,8 +3,6 @@ http:
     bazarr-router:
       rule: 'Host(`bazarr.{{ env "PROXY_HOSTNAME" }}`)'
       service: bazarr-service
-      middlewares:
-        - authelia
       entryPoints:
         - websecure
       tls:

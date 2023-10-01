@@ -5,8 +5,11 @@ http:
       service: http-service
       entryPoints:
         - websecure
+      middlewares:
+        - authelia
       tls:
         certResolver: cloudflare
+
   services:
     http-service:
       loadBalancer:

@@ -7,6 +7,10 @@ http:
         - websecure
       tls:
         certResolver: cloudflare
+        domains:
+          - main: '{{ env "PROXY_HOSTNAME" }}'
+            sans:
+              - '*.{{ env "PROXY_HOSTNAME" }}'
   services:
     dashboard-service:
       loadBalancer:

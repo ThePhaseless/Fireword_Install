@@ -36,6 +36,23 @@ if [ -z "$MEDIA_PATH" ]; then
   default=True
 fi
 
+# Ask the user if the default environment variables should be used
+if [ "$default" = True ]; then
+  echo "The default environment variables are:"
+  echo "SSD_PATH=$SSD_PATH"
+  echo "JBOD_PATH=$JBOD_PATH"
+  echo "CONFIG_PATH=$CONFIG_PATH"
+  echo "MEDIA_PATH=$MEDIA_PATH"
+  read -p "Do you want to use the default environment variables? (Y/n) " answer
+  case $answer in
+  [Nn]*)
+    echo "Please set the environment variables and run the script again"
+    exit
+    ;;
+  *) ;;
+  esac
+fi
+
 echo "Preparing directories..."
 # Create directories
 echo "Creating directories..."
@@ -59,23 +76,6 @@ sudo chown nobody:nogroup $SSD_PATH -R
 sudo chown nobody:nogroup $CONFIG_PATH -R
 echo "Done..."
 
-# Ask the user if the default environment variables should be used
-if [ "$default" = True ]; then
-  echo "The default environment variables are:"
-  echo "SSD_PATH=$SSD_PATH"
-  echo "JBOD_PATH=$JBOD_PATH"
-  echo "CONFIG_PATH=$CONFIG_PATH"
-  echo "MEDIA_PATH=$MEDIA_PATH"
-  read -p "Do you want to use the default environment variables? (Y/n) " answer
-  case $answer in
-  [Nn]*)
-    echo "Please set the environment variables and run the script again"
-    exit
-    ;;
-  *) ;;
-  esac
-fi
-
 # Set up Timezone
 echo "Setting up Timezone..."
 sudo timedatectl set-timezone Europe/Warsaw
@@ -86,14 +86,17 @@ sudo apt update
 sudo apt upgrade -y
 
 # Ask if the user wants to make a JBOD with raid0 or mergerfs or none
-echo "Do you want to setup a disk array?\n 1) RAID0\n 2) MergerFS\n 3) None"
+echo "Do you want to setup a disk array?"
+echo "1) RAID0"
+echo "2) MergerFS"
+echo "other) None"
 read -p "Choice: " choice
 case $choice in
 [1]*)
-  sudo bash ./raid0.sh
+  sudo bash ./setup_RAID0.sh
   ;;
 [2]*)
-  sudo bash ./mergerfs.sh
+  sudo bash ./setup_mergerfs.sh
   ;;
 *)
   echo "Skipping..."
@@ -106,7 +109,46 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # Download ZSH config
 echo "Downloading ZSH config..."
-curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o $CONFIG_PATH/.zshrc
+curl -fsSL https://raw.githubusercontent.com/ThePhaseless/MyPostInstall/main/.zshrc -o ~/.zshrc
+echo "Done..."
+
+# Add CONFIG_PATH and MEDIA_PATH to environment variables
+echo "Adding environment variables..."
+# Check if envs are already in the config file
+if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/zsh/zprofile; then
+  echo "CONFIG_PATH is already in the config file"
+else
+  echo "Adding CONFIG_PATH to the config file..."
+  echo "CONFIG_PATH=$CONFIG_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "HOSTNAME=$HOSTNAME" /etc/zsh/zprofile; then
+  echo "HOSTNAME is already in the config file"
+else
+  echo "Adding HOSTNAME to the config file..."
+  echo "HOSTNAME=$HOSTNAME" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "MEDIA_PATH=$MEDIA_PATH" /etc/zsh/zprofile; then
+  echo "MEDIA_PATH is already in the config file"
+else
+  echo "Adding MEDIA_PATH to the config file..."
+  echo "MEDIA_PATH=$MEDIA_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "SSD_PATH=$SSD_PATH" /etc/zsh/zprofile; then
+  echo "SSD_PATH is already in the config file"
+else
+  echo "Adding SSD_PATH to the config file..."
+  echo "SSD_PATH=$SSD_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
+
+if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/zsh/zprofile; then
+  echo "JBOD_PATH is already in the config file"
+else
+  echo "Adding JBOD_PATH to the config file..."
+  echo "JBOD_PAT=$JBOD_PATH" | sudo tee -a /etc/zsh/zprofile
+fi
 echo "Done..."
 
 # Set Zsh as the default shell
@@ -148,7 +190,7 @@ case $answer in
   echo "Skipping..."
   ;;
 *)
-  ./install_vscode.sh
+  bash ./setup_vscode.sh
   ;;
 
 esac
@@ -161,7 +203,7 @@ echo "Done..."
 # Fix Wifi, add renderer: NetworkManager to /etc/netplan/00-installer-config.yaml after version: 2
 echo "Fixing Wifi..."
 sudo apt install network-manager -y
-sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
+sudo sed -i 's/version: 2/version: 2\n  renderer: NetworkManager/' /etc/netplan/00-installer-config-wifi.yaml
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
@@ -176,97 +218,32 @@ else
 fi
 echo "Done..."
 
-# Preparing SAMBA
-echo "Preparing SAMBA..."
-apt install samba wsdd -y
-
-echo "Creating SAMBA shares..."
-# Add HDD_SAMBA_SHARE to config file
-HDD_SAMBA_SHARE="[HDD]\n
-    path = $JBOD_PATH\n
-    acl support = yes\n
-    read only = no\n
-    guest ok = yes\n
-    browsable = yes\n
-    writeable = yes\n
-    public = yes\n
-    "
-# Check if the HDD_SAMBA_SHARE is already in the config file
-if grep -Fxq "$HDD_SAMBA_SHARE" /etc/samba/smb.conf; then
-  echo "HDD_SAMBA_SHARE is already in the config file"
-else
-  printf "$HDD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
-fi
-
-# Add SSD_SAMBA_SHARE to config file
-SSD_SAMBA_SHARE="[SSD]\n
-    path = \n
-    acl support = yes\n
-    read only = no\n
-    guest ok = yes\n
-    browsable = yes\n
-    writeable = yes\n
-    public = yes\n
-    "
-# Check if the SSD_SAMBA_SHARE is already in the config file
-if grep -Fxq "$SSD_SAMBA_SHARE" /etc/samba/smb.conf; then
-  echo "SSD_SAMBA_SHARE is already in the config file"
-else
-  printf "$SSD_SAMBA_SHARE" | tee -a /etc/samba/smb.conf
-fi
-
-echo "Restarting SAMBA..."
-systemctl restart smbd
-echo "Done..."
-
-# Add CONFIG_PATH and MEDIA_PATH to environment variables
-echo "Adding environment variables..."
-# Check if envs are already in the config file
-if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/environment; then
-  echo "CONFIG_PATH is already in the config file"
-else
-  echo "Adding CONFIG_PATH to the config file..."
-  echo "CONFIG_PATH=$CONFIG_PATH" | tee -a /etc/environment
-fi
-
-if grep -Fxq "MEDIA_PATH=$MEDIA_PATH" /etc/environment; then
-  echo "MEDIA_PATH is already in the config file"
-else
-  echo "Adding MEDIA_PATH to the config file..."
-  echo "MEDIA_PATH=$MEDIA_PATH" | tee -a /etc/environment
-fi
-
-if grep -Fxq "SSD_PATH=$SSD_PATH" /etc/environment; then
-  echo "SSD_PATH is already in the config file"
-else
-  echo "Adding SSD_PATH to the config file..."
-  echo "SSD_PATH=$SSD_PATH" | tee -a /etc/environment
-fi
-
-if grep -Fxq "JBOD_PATH=$JBOD_PATH" /etc/environment; then
-  echo "JBOD_PATH is already in the config file"
-else
-  echo "Adding JBOD_PATH to the config file..."
-  echo "JBOD_PATH=$JBOD_PATH" | tee -a /etc/environment
-fi
-echo "Done..."
+# Install samba
+sudo bash ./setup_samba.sh
 
 # Install dependencies
 echo "Installing dependencies..."
-apt install curl rsync btop -y
+sudo apt install curl rsync btop -y
 echo "Done..."
 
-# Install Docker
-echo "Installing Docker and Docker Compose..."
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-rm get-docker.sh
-echo "Done..."
+# Check if docker is not already installed, install it
+# curl -fsSL https://get.docker.com -o get-docker.sh
+# sudo sh get-docker.sh
+if ! command -v docker &>/dev/null; then
+  echo "Installing docker..."
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh
+  rm get-docker.sh
+  echo "Done..."
+else
+  echo "Docker is already installed"
+fi
 
-# Pull and run Portainer
-echo "Pulling and running Portainer..."
-docker volume create portainer_data
-docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v $CONFIG_PATH/Portainer:/data portainer/portainer-ce
+# Add user to docker group
+echo "Adding user to docker group..."
+sudo groupadd docker
+echo "Adding $USER to docker group..."
+sudo usermod -aG docker $USER
 echo "Done..."
 
 # Allow for sudo without password
@@ -276,16 +253,20 @@ echo "Done..."
 
 # Install screen_off.service
 echo "Installing screen-off.service..."
-cp screen-off.service /etc/systemd/system
-cp screen-off.sh $CONFIG_PATH
+sudo cp screen-off.service /etc/systemd/system
+sudo cp screen-off.sh $CONFIG_PATH
 sudo chmod +x $CONFIG_PATH/screen-off.sh
 sudo chmod +x /etc/systemd/system/screen-off.service
-systemctl enable screen-off.service
+
+# Change $CONFIG_PATH to the actual path
+sudo sed -i "s|CONFIG_PATH|$CONFIG_PATH|g" /etc/systemd/system/screen-off.service
+
+sudo systemctl enable screen-off.service
 echo "Done..."
 
 # Clean up unnecessary packages
 echo "Cleaning up unnecessary packages..."
-apt autoremove -y
+sudo apt autoremove -y
 echo "Done..."
 
 # Ask the user if scirpt folder should be deleted
@@ -302,3 +283,6 @@ esac
 
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now"
+echo "To setup Portainer, run setup_portainer.sh"
+echo "Refreshing groups..."
+newgrp docker
