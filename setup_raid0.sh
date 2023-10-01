@@ -13,6 +13,18 @@ else
 
     # Check if disks are valid
     if [ -z "$JBOD_PATH" ]; then
+        # Check if disk exists
+        if [ ! -e "/dev/$DISK" ]; then
+            echo "Disk /dev/$DISK does not exist..."
+            exit 1
+        fi
+
+        # Check if disk is mounted
+        if grep -qs "/dev/$DISK" /proc/mounts; then
+            echo "Disk /dev/$DISK is mounted..."
+            exit 1
+        fi
+
         echo "JBOD_PATH = $JBOD_PATH"
         echo "JBOD_PATH not set..."
         exit 1
@@ -33,13 +45,17 @@ else
     mkdir -p $JBOD_PATH
     mount /dev/md0 $JBOD_PATH
 
+    sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+
+    sudo update-initramfs -u
+
     # Check if JBOD is already in fstab
     if grep -q "$JBOD_PATH" /etc/fstab; then
         echo "JBOD already in fstab..."
     else
         echo "Adding JBOD to fstab..."
         # Add JBOD to fstab
-        echo "/dev/md0 $JBOD_PATH ext4 defaults 0 0" | tee -a /etc/fstab
+        echo "/dev/md0 $JBOD_PATH ext4 defaults,nofail,discard 0 0" | tee -a /etc/fstab
         # Update initramfs
         echo "Updating initramfs..."
         systemctl daemon-reload
