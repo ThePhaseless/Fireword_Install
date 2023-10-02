@@ -79,7 +79,7 @@ else
     echo "# JBOD" | tee -a /etc/fstab
     echo "# DO NOT EDIT THIS SECTION BY HAND" | tee -a /etc/fstab
     echo "/dev/md0 $JBOD_PATH ext4 defaults,nofail,discard 0 0" | tee -a /etc/fstab
-    edho "# JBOD END" | tee -a /etc/fstab
+    echo "# JBOD END" | tee -a /etc/fstab
     # Update initramfs
     echo "Updating initramfs..."
     sudo update-initramfs -u
