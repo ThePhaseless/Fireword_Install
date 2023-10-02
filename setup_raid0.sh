@@ -13,6 +13,16 @@ else
 
     # Check if disks are valid
     if [ -z "$JBOD_PATH" ]; then
+
+        echo "JBOD_PATH = $JBOD_PATH"
+        echo "JBOD_PATH not set..."
+        exit 1
+    fi
+
+    echo "Setting up JBOD..."
+    JBOD_disks_num=0
+    JBOD_disks=""
+    for DISK in $DISKS; do
         # Check if disk exists
         if [ ! -e "/dev/$DISK" ]; then
             echo "Disk /dev/$DISK does not exist..."
@@ -25,15 +35,6 @@ else
             exit 1
         fi
 
-        echo "JBOD_PATH = $JBOD_PATH"
-        echo "JBOD_PATH not set..."
-        exit 1
-    fi
-
-    echo "Setting up JBOD..."
-    JBOD_disks_num=0
-    JBOD_disks=""
-    for DISK in $DISKS; do
         JBOD_disks="$JBOD_disks /dev/$DISK"
         JBOD_disks_num=$((JBOD_disks_num + 1))
     done
