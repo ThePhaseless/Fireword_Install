@@ -55,17 +55,23 @@ else
 
     sudo update-initramfs -u
 
-    # Check if JBOD is already in fstab
-    if grep -q "$JBOD_PATH" /etc/fstab; then
+    # Check if JBOD config is already in fstab
+    if grep -q "# JBOD" /etc/fstab; then
         echo "JBOD already in fstab..."
-    else
-        echo "Adding JBOD to fstab..."
-        # Add JBOD to fstab
-        echo "/dev/md0 $JBOD_PATH ext4 defaults,nofail,discard 0 0" | tee -a /etc/fstab
-        # Update initramfs
-        echo "Updating initramfs..."
-        systemctl daemon-reload
+        echo "Removing old JBOD from fstab..."
+        # Remove old JBOD from fstab
+        sudo sed -i '/# JBOD/,/# JBOD END/d' /etc/fstab
     fi
+
+    echo "Adding JBOD to fstab..."
+    # Add JBOD to fstab
+    echo "# JBOD" | tee -a /etc/fstab
+    echo "# DO NOT EDIT THIS SECTION BY HAND" | tee -a /etc/fstab
+    echo "/dev/md0 $JBOD_PATH ext4 defaults,nofail,discard 0 0" | tee -a /etc/fstab
+    edho "# JBOD END" | tee -a /etc/fstab
+    # Update initramfs
+    echo "Updating initramfs..."
+    systemctl daemon-reload
 
     echo "Done..."
 fi
