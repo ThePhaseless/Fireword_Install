@@ -16,7 +16,12 @@ else
 
         echo "JBOD_PATH = $JBOD_PATH"
         echo "JBOD_PATH not set..."
-        exit 1
+        # Ask for JBOD path, if empty set to /public/HDD
+        echo "Where should the JBOD be mounted? (e.g., /public/HDD)"
+        read -p "JBOD path: " JBOD_PATH
+        if [ -z "$JBOD_PATH" ]; then
+            JBOD_PATH="/public/HDD"
+        fi
     fi
 
     echo "Setting up JBOD..."
