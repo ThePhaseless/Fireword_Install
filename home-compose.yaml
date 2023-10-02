@@ -1,6 +1,24 @@
 version: "3"
 name: home
 services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - PASSWORD=password #optional
+      - HASHED_PASSWORD= #optional
+      - SUDO_PASSWORD=password #optional
+      - SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN=code.${PROXY_HOSTNAME} #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${CONFIG_PATH}/code:/config
+    ports:
+      - 5554:8443
+    restart: unless-stopped
   homepage:
     image: ghcr.io/benphelps/homepage:latest
     container_name: homepage
