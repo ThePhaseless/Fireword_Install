@@ -51,7 +51,18 @@ else
     mkdir -p $JBOD_PATH
     mount /dev/md0 $JBOD_PATH
 
+    # Check if JBOD config is already in mdadm.conf
+    if grep -q "# JBOD" /etc/mdadm/mdadm.conf; then
+        echo "JBOD already in mdadm.conf..."
+        echo "Removing old JBOD from mdadm.conf..."
+        # Remove old JBOD from mdadm.conf
+        sudo sed -i '/# JBOD/,/# JBOD END/d' /etc/mdadm/mdadm.conf
+    fi
+    echo "Adding JBOD to mdadm.conf..."
+    # Add JBOD to mdadm.conf
+    echo "# JBOD" | sudo tee -a /etc/mdadm/mdadm.conf
     sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+    echo "# JBOD END" | sudo tee -a /etc/mdadm/mdadm.conf
 
     sudo update-initramfs -u
 
@@ -71,7 +82,7 @@ else
     edho "# JBOD END" | tee -a /etc/fstab
     # Update initramfs
     echo "Updating initramfs..."
-    systemctl daemon-reload
+    sudo update-initramfs -u
 
     echo "Done..."
 fi
