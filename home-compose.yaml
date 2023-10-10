@@ -54,6 +54,15 @@ services:
     container_name: sggwbot
     image: thephaseless/sggwbot:main
 
+  filebrowser:
+    volumes:
+      - "/public:/srv"
+      - "${CONFIG_PATH}/Files/filebrowser.db:/database.db"
+      - "${CONFIG_PATH}/Files/.filebrowser.json:/.filebrowser.json"
+    ports:
+      - "8080:80"
+    image: filebrowser/filebrowser
+
   traefik:
     restart: unless-stopped
     container_name: traefik
