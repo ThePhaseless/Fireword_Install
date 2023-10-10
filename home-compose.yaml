@@ -60,7 +60,7 @@ services:
       - "${CONFIG_PATH}/Files/filebrowser.db:/database.db"
       - "${CONFIG_PATH}/Files/.filebrowser.json:/.filebrowser.json"
     ports:
-      - "8080:80"
+      - "900:80"
     image: filebrowser/filebrowser
 
   traefik:
