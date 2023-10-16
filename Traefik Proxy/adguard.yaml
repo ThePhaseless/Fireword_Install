@@ -3,6 +3,8 @@ http:
     adguard-router:
       rule: 'Host(`adguard.{{ env "PROXY_HOSTNAME" }}`)'
       service: adguard-service
+      middlewares:
+        - authelia
       entryPoints:
         - websecure
       tls:

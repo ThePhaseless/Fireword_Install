@@ -2,6 +2,7 @@ http:
   routers:
     bazarr-router:
       rule: 'Host(`bazarr.{{ env "PROXY_HOSTNAME" }}`)'
+      middlewares: autheli
       service: bazarr-service
       entryPoints:
         - websecure

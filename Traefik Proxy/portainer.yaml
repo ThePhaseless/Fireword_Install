@@ -3,6 +3,8 @@ http:
     portainer-router:
       rule: 'Host(`portainer.{{ env "PROXY_HOSTNAME" }}`)'
       service: portainer-service
+      middlewares:
+        - authelia
       entryPoints:
         - websecure
       tls:
