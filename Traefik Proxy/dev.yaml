@@ -1,8 +1,8 @@
 http:
   routers:
-    qbt-router:
-      rule: 'Host(`qbt.{{ env "PROXY_HOSTNAME" }}`)'
-      service: qbt-service
+    dev-router:
+      rule: 'Host(`dev.{{ env "PROXY_HOSTNAME" }}`)'
+      service: dev-service
       middlewares:
         - authelia
       entryPoints:
@@ -11,7 +11,7 @@ http:
         certResolver: cloudflare
 
   services:
-    qbt-service:
+    dev-service:
       loadBalancer:
         servers:
-          - url: 'http://{{ env "TARGET_IP"  }}:3434'
+          - url: 'http://{{ env "TARGET_IP"  }}:8000'

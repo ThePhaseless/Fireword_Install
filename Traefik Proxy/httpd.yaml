@@ -5,8 +5,6 @@ http:
       service: http-service
       entryPoints:
         - websecure
-      middlewares:
-        - authelia
       tls:
         certResolver: cloudflare
 
@@ -14,4 +12,4 @@ http:
     http-service:
       loadBalancer:
         servers:
-          - url: 'http://{{ env "TARGET_IP"  }}:85'
+          - url: 'http://{{ env "TARGET_IP"  }}:81'
