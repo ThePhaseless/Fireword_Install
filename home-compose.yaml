@@ -57,8 +57,6 @@ services:
   filebrowser:
     volumes:
       - "/public:/srv"
-      - "${CONFIG_PATH}/Files/filebrowser.db:/database.db"
-      - "${CONFIG_PATH}/Files/.filebrowser.json:/.filebrowser.json"
     ports:
       - "900:80"
     image: filebrowser/filebrowser
