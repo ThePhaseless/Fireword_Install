@@ -55,6 +55,7 @@ services:
     image: thephaseless/sggwbot:main
 
   filebrowser:
+    container_name: filebrowser
     volumes:
       - "/public:/srv"
     ports:
