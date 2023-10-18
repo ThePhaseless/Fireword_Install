@@ -1,0 +1,72 @@
+services:
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  traefik:
+    depends_on:
+      - watchtower
+      - authelia
+    container_name: traefik
+    # The official v2 Traefik docker image
+    image: traefik:latest
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
+      - "--global.sendAnonymousUsage=true"
+      - "--providers.file.directory=/config"
+      - "--providers.file.watch=true"
+      - "--certificatesResolvers.cloudflare.acme.email=${CF_EMAIL}"
+      - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=0"
+    environment:
+      - CF_EMAIL=${CF_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - TARGET_IP=${TARGET_IP}
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./Traefik/config:/config
+      - ./Traefik/cert:/cert
+
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    command: ["--config", "/config/authelia.yml"]
+    environment:
+      - AUTHELIA_NOTIFIER_SMTP_HOST=smtp.gmail.com
+      - AUTHELIA_NOTIFIER_SMTP_PORT=587
+      - AUTHELIA_NOTIFIER_SMTP_USERNAME=${SMTP_USERNAME}
+      - AUTHELIA_NOTIFIER_SMTP_PASSWORD=${SMTP_PASSWORD}
+      - AUTHELIA_NOTIFIER_SMTP_SENDER=${SMTP_SENDER}
+      - AUTHELIA_LOG_LEVEL=info
+      - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
+      - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
+      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
+      - AUTHELIA_ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - AUTHELIA_LOCAL_PATH=/config/db.sqlite3
+      - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
+    volumes:
+      - "./Authelia:/config"
+    labels:
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name"
+      - "traefik.http.routers.authelia-router.rule=Host(`auth.${PROXY_HOSTNAME}`)"
+      - "traefik.http.routers.authelia-router.entrypoints=websecure"
+      - "traefik.http.routers.authelia-router.tls.certresolver=cloudflare"
+      - "traefik.http.services.authelia-service.loadbalancer.server.port=9091"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Visual Studio Code Web Server Service
+
+[Service]
+Type=simple
+ExecStart=code --use-version stable serve-web --host 0.0.0.0 --without-connection-token
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
