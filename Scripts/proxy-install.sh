@@ -14,9 +14,6 @@ if [ ! -d "$PWD/.git" ]; then
     exit
 fi
 
-# Add PROXY=true to environment variables
-echo "Adding PROXY=true to environment variables..."
-
 # Install Tailscale
 echo "Installing Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -53,7 +50,9 @@ bash ./Scripts/setup_zsh.sh
 ## For root
 sudo bash ./Scripts/setup_zsh.sh
 
+echo "Adding environment variables"
 echo "PROXY=true" >>~/.zshrc
+echo "PROXY=true" >>~/.bashrc
 
 bash ./Scripts/update_traefik_conf.sh
 bash ./Scripts/update_proxy_stack.sh
