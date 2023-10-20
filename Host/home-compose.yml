@@ -1,12 +1,19 @@
-version: "3"
-name: home
 services:
+  httpd:
+    image: httpd:latest
+    container_name: httpd
+    ports:
+      - "81:80"
+    volumes:
+      - ${CONFIG_PATH}/${CATEGORY}/Httpd:/usr/local/apache2/htdocs
+    restart: unless-stopped
+
   homepage:
     image: ghcr.io/benphelps/homepage:latest
     container_name: homepage
     environment:
-      PUID: 1000
-      PGID: 1000
+      PUID: ${PUID}
+      PGID: ${PGID}
     ports:
       - 4000:3000
     volumes:
@@ -59,6 +66,7 @@ services:
       - "3000:3000/tcp" # Setup
 
   scanservjs:
+    container_name: scanservjs-container
     image: "sbs20/scanservjs:latest"
     ports:
       - "5555:8080"
@@ -69,13 +77,12 @@ services:
     restart: unless-stopped
     devices:
       - "/dev/bus/usb:/dev/bus/usb"
-    container_name: scanservjs-container
     privileged: true
 
   wolweb:
     container_name: wolweb
     image: "ghcr.io/sameerdhoot/wolweb"
-    restart: always
+    restart: unless-stopped
     volumes:
       - ${CONFIG_PATH}/${CATEGORY}/WakeOnLAN/devices.json:/devices.json
     network_mode: host

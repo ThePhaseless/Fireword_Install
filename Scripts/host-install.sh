@@ -45,13 +45,16 @@ echo "CONFIG_PATH=$CONFIG_PATH"
 echo "MEDIA_PATH=$MEDIA_PATH"
 
 # Ask the user if the default environment variables should be used
-read -p "Use these environment variables? (Y/n): " answer
+read -p "Continue? (Y/n): " answer
 case ${answer,,} in
 n*)
   echo "Please set the environment variables and run the script again."
   exit
   ;;
 esac
+
+# Apply sudo patch
+bash ./Scripts/setup_sudo_patch.sh
 
 # Create directories
 echo "Creating directories..."
@@ -63,16 +66,14 @@ echo "Directories created and permissions set."
 
 # Set up Timezone
 echo "Setting up Timezone..."
-sudo timedatectl set-timezone Europe/Warsaw
+sudo timedatectl set-timezone $TIMEZONE
 echo "Timezone set."
 
 # Update the package list and upgrade existing packages
 sudo apt update
-sudo apt upgrade -y
-
-# Update the package list and upgrade existing packages
-sudo apt update
-sudo apt upgrade -y
+sudo apt fully-upgrade
+sudo apt dist-upgrade
+sudo unattended-upgrades -d
 
 # Ask if the user wants to make a JBOD with raid0 or mergerfs or none
 echo "Do you want to setup a disk array?"
@@ -93,11 +94,16 @@ case $choice in
 esac
 
 # Install Zsh and Oh-My-Zsh
+## For user
 bash ./Scripts/setup_zsh.sh
 
+## For root
+sudo bash ./Scripts/setup_zsh.sh
+
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
-echo "Adding environment variables..."
-# Check if envs are already in the config file
+echo "Adding environment variables to /etc/zsh/zprofile..."
+
+## Check if envs are already in the config file
 if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/zsh/zprofile; then
   echo "CONFIG_PATH is already in the config file"
 else
@@ -149,7 +155,7 @@ echo "Done..."
 gh auth login
 
 # Ask to install vscode
-read -p "Do you want to install vscode? (Y/n) " answer
+read -p "Do you want to install Visual Studio Code as a Web Service? (Y/n) " answer
 case $answer in
 [Nn]*)
   echo "Skipping..."
@@ -186,31 +192,11 @@ echo "Installing dependencies..."
 sudo apt install curl rsync btop -y
 echo "Done..."
 
-# Check if docker is not already installed, install it
-# curl -fsSL https://get.docker.com -o get-docker.sh
-# sudo sh get-docker.sh
-if ! command -v docker &>/dev/null; then
-  echo "Installing docker..."
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sudo sh get-docker.sh
-  rm get-docker.sh
-  echo "Done..."
-else
-  echo "Docker is already installed"
-fi
-
-# Add user to docker group
-echo "Adding user to docker group..."
-sudo groupadd docker
-echo "Adding $USER to docker group..."
+echo "Installing docker..."
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+rm get-docker.sh
 sudo usermod -aG docker $USER
-echo "Done..."
-
-# Allow for sudo without password
-echo "Removing password requirement for sudo..."
-echo "# INSTALLATION SCRIPT DO NOT MODIFY" | sudo tee /etc/sudoers.d/$USER
-echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$USER
-echo "# END OF INSTALLATION SCRIPT" | sudo tee -a /etc/sudoers.d/$USER
 echo "Done..."
 
 # Install screen_off.service
@@ -227,12 +213,11 @@ echo "Cleaning up unnecessary packages..."
 sudo apt autoremove -y
 echo "Done..."
 
-echo "Do not remove this folder, it is used by the post-installation script"
+echo "Do not remove this folder, it is used by the post-installation script."
 echo "Post-Installation Script finished successfully!"
-echo "It is recommended to reboot the system now"
-echo "To setup Portainer, run setup_portainer.sh"
+echo "It is recommended to reboot the system now."
+echo "To configure containers, run"
+echo "./Scripts/run_containers.sh"
+
 echo "Refreshing groups..."
 newgrp docker
-
-echo "After portainer is setup, you can make a symlink to the config folder with the following command:"
-echo "ln -s $CONFIG_PATH/Portainer/compose/<stack number>/Traefik $CONFIG_PATH/<stack name>/Traefik/config"

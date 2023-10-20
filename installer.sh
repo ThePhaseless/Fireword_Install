@@ -12,10 +12,10 @@ echo "2. Proxy"
 read -p "Enter your choice: " choice
 case $choice in
 [1]*)
-    bash ./Fireword/fireword-install.sh
+    bash ./Scripts/host-install.sh
     ;;
 [2]*)
-    bash ./Proxy/proxy-install.sh
+    bash ./Scripts/proxy-install.sh
     ;;
 *)
     echo "Invalid choice"

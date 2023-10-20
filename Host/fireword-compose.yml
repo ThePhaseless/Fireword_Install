@@ -1,43 +1,4 @@
-name: fireword
 services:
-  traefik:
-    restart: unless-stopped
-    container_name: traefik
-    # The official v2 Traefik docker image
-    image: traefik:latest
-    # Enables the web UI and tells Traefik to listen to docker
-    command:
-      - "--api.dashboard=true"
-      - "--providers.docker"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.traefik.address=:8080"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
-      - "--global.sendAnonymousUsage=true"
-      - "--providers.file.directory=/config"
-      - "--providers.file.watch=true"
-      - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
-    environment:
-      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
-      - TARGET_IP=${TARGET_IP}
-    ports:
-      # The HTTP port
-      - "80:80"
-      - "443:443"
-    volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${CONFIG_PATH}/${CATEGORY}/Traefik/cert:/cert
-      - ${CONFIG_PATH}/${CATEGORY}/Traefik/config:/config
-      # - ./traefik.yaml:/etc/traefik/traefik.yaml
-    labels:
-      - traefik.http.routers.proxy.tls=true
-      - traefik.http.routers.proxy.tls.certresolver=cloudflare
-      - traefik.http.routers.proxy.tls.domains[0].main=${PROXY_HOSTNAME}
-      - traefik.http.routers.proxy.tls.domains[0].sans=*.${PROXY_HOSTNAME}
-
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr
     container_name: recyclarr
@@ -46,23 +7,6 @@ services:
       - ${CONFIG_PATH}/${CATEGORY}/Recyclarr:/config
     environment:
       - TZ=${TIMEZONE}
-  reiverr:
-    image: ghcr.io/aleksilassila/reiverr:latest
-    container_name: reiverr
-    ports:
-      - 9494:9494
-    volumes:
-      - ${CONFIG_PATH}/${CATEGORY}/Reiverr:/config
-    restart: unless-stopped
-
-  httpd:
-    image: httpd:latest
-    container_name: httpd
-    ports:
-      - "81:80"
-    volumes:
-      - ${CONFIG_PATH}/${CATEGORY}/Httpd:/usr/local/apache2/htdocs
-    restart: unless-stopped
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -182,7 +126,7 @@ services:
       - /dev/dri/card0:/dev/dri/card0
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

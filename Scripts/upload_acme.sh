@@ -1,10 +1,10 @@
 #!/bin/bash
 # Get the current day of the year
-SSH_USERNAME="thephaseless"
-SSH_HOSTNAME="litwave"
+SSH_USERNAME="user"
+SSH_HOSTNAME="hostname"
 ACME_FILE="acme.json"
-ACME_DIR_LOCAL="/home/ubuntu/Proxy/Traefik/cert"
-ACME_DIR_EXTERNAL="/public/SSD/Config/Home/Traefik/cert"
+ACME_DIR_PROXY="/home/ubuntu/Proxy/Traefik/cert"
+ACME_DIR_HOST="/public/SSD/Config/Home/Traefik/cert"
 declare -i offset=0
 declare -i current_day=$(date +%j)
 current_day=$((current_day - offset))
@@ -20,26 +20,31 @@ if [ "$((current_day % target_day))" -eq 0 ] || [ "$1" == "--force" ]; then
     echo "Uploading acme.json file to $SSH_HOSTNAME..."
 
     # Change the permissions of the file to 777
-    echo "Changing permissions of $ACME_DIR_LOCAL/$ACME_FILE to 777..."
-    sudo chmod 777 $ACME_DIR_LOCAL/$ACME_FILE
+    echo "Changing permissions of $ACME_DIR_PROXY
+/$ACME_FILE to 777..."
+    sudo chmod 777 $ACME_DIR_PROXY
+    /$ACME_FILE
     # Give it a second to change the permissions
     sleep 1
 
     # Create the folder if it doesn't exist
-    echo "Creating $ACME_DIR_EXTERNAL if it doesn't exist..."
-    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo mkdir -p $ACME_DIR_EXTERNAL && sudo chmod 777 $ACME_DIR_EXTERNAL"
+    echo "Creating $ACME_DIR_HOST if it doesn't exist..."
+    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo mkdir -p $ACME_DIR_HOST && sudo chmod 777 $ACME_DIR_HOST"
 
-    echo "Removing old $ACME_DIR_EXTERNAL/$ACME_FILE on $SSH_HOSTNAME..."
-    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo rm -f $ACME_DIR_EXTERNAL/$ACME_FILE"
+    echo "Removing old $ACME_DIR_HOST/$ACME_FILE on $SSH_HOSTNAME..."
+    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo rm -f $ACME_DIR_HOST/$ACME_FILE"
 
     echo "Uploading $ACME_FILE to $SSH_HOSTNAME..."
-    scp $ACME_DIR_LOCAL/$ACME_FILE $SSH_USERNAME@$SSH_HOSTNAME:$ACME_DIR_EXTERNAL
+    scp $ACME_DIR_PROXY
+    /$ACME_FILE $SSH_USERNAME@$SSH_HOSTNAME:$ACME_DIR_HOST
 
-    echo "Changing permissions of $ACME_DIR_EXTERNAL/$ACME_FILE on $SSH_HOSTNAME to 600..."
-    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo chmod 600 $ACME_DIR_EXTERNAL/$ACME_FILE"
+    echo "Changing permissions of $ACME_DIR_HOST/$ACME_FILE on $SSH_HOSTNAME to 600..."
+    ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo chmod 600 $ACME_DIR_HOST/$ACME_FILE"
 
-    echo "Changing permissions of $ACME_DIR_LOCAL/$ACME_FILE back to 600..."
-    sudo chmod 600 $ACME_DIR_LOCAL/$ACME_FILE
+    echo "Changing permissions of $ACME_DIR_PROXY
+/$ACME_FILE back to 600..."
+    sudo chmod 600 $ACME_DIR_PROXY
+    /$ACME_FILE
 
     echo "Done..."
 else

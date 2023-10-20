@@ -6,7 +6,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Download ZSH config
 echo "Replacing ZSH config for user $USER..."
 cp ~/.zshrc ~/.zshrc.bak
-cp ~/Fireword/Config/.zshrc ~/.zshrc
+cp .zshrc ~/.zshrc
 
 # Set Zsh as the default shell
 echo "Setting Zsh as the default shell..."
