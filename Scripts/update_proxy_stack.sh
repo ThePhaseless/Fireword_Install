@@ -1,3 +1,4 @@
+#!/bin/bash
 # if PROXY is not said, ask if script should continue
 
 if [ -z "$PROXY" ]; then
