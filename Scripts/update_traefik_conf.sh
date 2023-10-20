@@ -8,7 +8,7 @@ source ./settings.conf
 source ./Host/traefik.env
 
 # Check if running on proxy server or if --proxy flag is set
-if [ -z "$PROXY" || "$PROXY" == "false" ]; then
+if [ -z "$PROXY" or "$PROXY" == "false" ]; then
 
     echo "PROXY is not set, using Host configuration"
     echo "Pulling Traefik configs to $CONFIG_PATH/$CATEGORY/config"
