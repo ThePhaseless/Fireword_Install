@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# Check if code is already installed
+if [ -x "$(command -v code)" ]; then
+    echo "VSCode CLI is already installed..."
+    echo "Updating VSCode CLI..."
+    sudo code update
+    exit
+fi
+
 echo "Downloading VSCode CLI..."
 sudo apt update
 sudo apt install git -y
