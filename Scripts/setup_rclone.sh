@@ -11,7 +11,7 @@ rclone config
 
 # Add rclone to crontab daily
 echo "Adding rclone to crontab..."
-cp sync_backups.sh $CONFIG_PATH
+cp sync_backups.sh "$CONFIG_PATH"
 # Check if rclone is already in crontab
 if crontab -l | grep -q "sync_backups.sh"; then
     echo "rclone is already in crontab"

@@ -25,7 +25,7 @@ echo "Installing Docker and Docker Compose..."
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 rm get-docker.sh
-sudo usermod -aG docker $USER
+sudo usermod -aG docker "$USER"
 
 # Check if upload_acme is in crontab, if not add it
 echo "Checking if upload_acme.sh is in crontab..."

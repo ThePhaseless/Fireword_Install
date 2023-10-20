@@ -1,7 +1,7 @@
 #!/bin/bash
 lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT
 echo "Which disks should be used with JBOD? (e.g., sda sdb sdc, none)"
-read -p "Disks: " DISKS
+read -r -p "Disks: " DISKS
 if [ "$DISKS" = "none" ]; then
     echo "Skipping JBOD setup..."
 else
@@ -18,7 +18,7 @@ else
         echo "JBOD_PATH not set..."
         # Ask for JBOD path, if empty set to /public/HDD
         echo "Where should the JBOD be mounted? (e.g., /public/HDD)"
-        read -p "JBOD path: " JBOD_PATH
+        read -r -p "JBOD path: " JBOD_PATH
         if [ -z "$JBOD_PATH" ]; then
             JBOD_PATH="/public/HDD"
         fi
@@ -48,11 +48,11 @@ else
         else
             # Remove all partitions
             echo "Removing existing partitions from /dev/${DISK}..."
-            wipefs -a /dev/${DISK}
+            wipefs -a /dev/"${DISK}"
 
             # Create partition
             echo "Creating partition..."
-            parted -s /dev/${DISK} mklabel gpt mkpart primary ext4 0% 100%
+            parted -s /dev/"${DISK}" mklabel gpt mkpart primary ext4 0% 100%
             sleep 1
 
             # Add partition to JBOD
@@ -64,7 +64,7 @@ else
 
     # Create JBOD
     echo "Creating RAID0..."
-    mdadm --create --verbose /dev/md0 --level=0 --raid-devices=$JBOD_disks_num $JBOD_disks
+    mdadm --create --verbose /dev/md0 --level=0 --raid-devices=$JBOD_disks_num "$JBOD_disks"
 
     # Create filesystem
     echo "Creating filesystem..."
@@ -72,8 +72,8 @@ else
 
     # Mount JBOD
     echo "Mounting JBOD..."
-    mkdir -p $JBOD_PATH
-    mount /dev/md0 $JBOD_PATH
+    mkdir -p "$JBOD_PATH"
+    mount /dev/md0 "$JBOD_PATH"
 
     # Check if JBOD config is already in fstab
     if grep -q "# JBOD" /etc/fstab; then

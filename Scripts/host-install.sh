@@ -33,16 +33,16 @@ echo "Using these environment variables:"
 # Set default values for environment variables from fireword.env
 if [ -f ./Host/fireword.env ]; then
   echo "Using environment variables from ./Host/fireword.env"
-  envString = $(cat ./Host/fireword.env | grep -v '#' | awk '/=/ {print $1}')
-  echo $envString
-  export $envString
+  envString=$(cmd ./Host/fireword.env | grep -v '#' | awk '/=/ {print $1}')
+  echo "$envString"
+  export "$envString"
 else
   echo "No ./Host/fireword.env file found, please set them and run the script again."
   exit
 fi
 
 # Ask the user if the default environment variables should be used
-read -p "Continue? (Y/n): " answer
+read -r -p "Continue? (Y/n): " answer
 case ${answer,,} in
 n*)
   echo "Please set the environment variables and run the script again."
@@ -63,7 +63,7 @@ echo "Directories created and permissions set."
 
 # Set up Timezone
 echo "Setting up Timezone..."
-sudo timedatectl set-timezone $TIMEZONE
+sudo timedatectl set-timezone "$TIMEZONE"
 echo "Timezone set."
 
 # Update the package list and upgrade existing packages
@@ -77,7 +77,7 @@ echo "Do you want to setup a disk array?"
 echo "1) RAID0"
 echo "2) MergerFS"
 echo "other) None"
-read -p "Choice: " choice
+read -r -p "Choice: " choice
 case $choice in
 [1]*)
   sudo bash ./Scripts/setup_RAID0.sh
@@ -152,7 +152,7 @@ echo "Done..."
 gh auth login
 
 # Ask to install vscode
-read -p "Do you want to install Visual Studio Code as a Web Service? (Y/n) " answer
+read -r -p "Do you want to install Visual Studio Code as a Web Service? (Y/n) " answer
 case $answer in
 [Nn]*)
   echo "Skipping..."
@@ -193,7 +193,7 @@ echo "Installing docker..."
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 rm get-docker.sh
-sudo usermod -aG docker $USER
+sudo usermod -aG docker "$USER"
 echo "Done..."
 
 # Install screen_off.service

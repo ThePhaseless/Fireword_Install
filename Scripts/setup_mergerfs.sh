@@ -13,16 +13,17 @@ fi
 if ! command -v mergerfs &>/dev/null; then
     echo "mergerfs is not installed"
     echo "Do you want to install mergerfs? (Y/n)"
-    read -p "Answer: " answer
+    read -r -p "Answer: " answer
     case $answer in
+    [Nn] | no) echo "Canceling..." && exit 1 ;;
     *)
         # Ask user for link for mergerfs
         echo "Please provide a link to the mergerfs deb file"
-        read -p "Link: " link
+        read -r -p "Link: " link
 
         # Download mergerfs
         echo "Downloading mergerfs..."
-        wget -O mergerfs.deb $link
+        wget -O mergerfs.deb "$link"
 
         # Install mergerfs
         echo "Installing mergerfs..."
@@ -32,7 +33,6 @@ if ! command -v mergerfs &>/dev/null; then
         echo "Removing mergerfs.deb..."
         rm mergerfs.deb
         ;;
-    [Nn] | no) echo "Canceling..." && exit 1 ;;
     esac
 fi
 
@@ -41,7 +41,7 @@ if [ -z "$JBOD_PATH" ]; then
     echo "JBOD_PATH = $JBOD_PATH"
     echo "JBOD_PATH not set..."
     echo "Do you want to set JBOD_PATH to /public/HDD? (y/N)"
-    read -p "Answer: " answer
+    read -r -p "Answer: " answer
     case $answer in
     [Yy] | yes)
         export JBOD_PATH="/public/HDD"
@@ -51,14 +51,14 @@ if [ -z "$JBOD_PATH" ]; then
 fi
 
 # Create JBOD_PATH
-mkdir -p $JBOD_PATH
+mkdir -p "$JBOD_PATH"
 
 # Show disks
 lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT
 
 # Ask for disks
 echo "Which disks should be used with MergerFS? (e.g., sda sdb sdc, sdc sdd1, sda1 sdc3, none)"
-read -p "Disks: " DISKS
+read -r -p "Disks: " DISKS
 
 # Check if disks are specified
 if [ -z "$DISKS" ]; then
@@ -93,7 +93,7 @@ for DISK in $DISKS; do
     if [[ "${DISK:(-1)}" =~ ^[0-9]+$ ]]; then
         echo "Disk /dev/$DISK is a partition..."
         echo "Getting partition UUID..."
-        uuid=$(blkid -s UUID -o value /dev/$DISK)
+        uuid=$(blkid -s UUID -o value /dev/"$DISK")
         if [ -z "$uuid" ]; then
             echo "UUID not found..."
             exit 1
@@ -101,24 +101,24 @@ for DISK in $DISKS; do
     else
         echo "Disk /dev/$DISK is not a partition..."
         # Ask user if he wants to format the disk
-        read -p "Do you want to format and create a new and only partition on /dev/$DISK? (y/N) " answer
+        read -r -p "Do you want to format and create a new and only partition on /dev/$DISK? (y/N) " answer
         case $answer in
         [Yy]*)
             # Remove all partitions
             echo "Removing existing partitions..."
-            wipefs -a /dev/$DISK
+            wipefs -a /dev/"$DISK"
 
             # Create partition
             echo "Creating partition..."
-            parted -s /dev/$DISK mklabel gpt mkpart primary ext4 0% 100%
+            parted -s /dev/"$DISK" mklabel gpt mkpart primary ext4 0% 100%
             sleep 1
 
             # Format partition
             echo "Formatting partition..."
-            mkfs.ext4 -F /dev/$DISK\1
+            mkfs.ext4 -F /dev/"$DISK"\1
 
             # Get partition UUID
-            uuid=$(blkid -s UUID -o value /dev/$DISK"1")
+            uuid=$(blkid -s UUID -o value /dev/"$DISK""1")
 
             # Check if UUID is empty
             if [ -z "$uuid" ]; then
@@ -132,7 +132,7 @@ for DISK in $DISKS; do
 
     # Mount disk
     mkdir -p /mnt/disk$MergerFS_disks_num
-    mount UUID=$uuid /mnt/disk$MergerFS_disks_num
+    mount UUID="$uuid" /mnt/disk$MergerFS_disks_num
 
     # Check if disk exists in fstab
     if grep -q "/dev/$DISK" /etc/fstab; then

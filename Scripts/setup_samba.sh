@@ -15,7 +15,7 @@ if [ -z "$JBOD_PATH" ]; then
     echo "JBOD_PATH is not set"
     # Ask user to set JBOD_PATH
     echo "Please enter the path to the JBOD or leave empty to /public/HDD"
-    read JBOD_PATH
+    read -r JBOD_PATH
     if [ -z "$JBOD_PATH" ]; then
         JBOD_PATH="/public/HDD"
     fi
@@ -24,7 +24,7 @@ if [ -z "$SSD_PATH" ]; then
     echo "SSD_PATH is not set"
     # Ask user to set SSD_PATH
     echo "Please enter the path to the SSD or leave empty to /public/SSD"
-    read SSD_PATH
+    read -r SSD_PATH
     if [ -z "$SSD_PATH" ]; then
         SSD_PATH="/public/SSD"
     fi
@@ -45,7 +45,7 @@ if grep -Fxq "[HDD]" /etc/samba/smb.conf; then
     echo "HDD_SAMBA_SHARE is already in the config file"
 else
     echo "Adding HDD_SAMBA_SHARE to the config file..."
-    echo -e $HDD_SAMBA_SHARE >>/etc/samba/smb.conf
+    echo -e "$HDD_SAMBA_SHARE" >>/etc/samba/smb.conf
 fi
 
 # Add SSD_SAMBA_SHARE to config file
@@ -62,7 +62,7 @@ if grep -Fxq "[SSD]" /etc/samba/smb.conf; then
     echo "SSD_SAMBA_SHARE is already in the config file"
 else
     echo "Adding SSD_SAMBA_SHARE to the config file..."
-    echo -e $SSD_SAMBA_SHARE >>/etc/samba/smb.conf
+    echo -e "$SSD_SAMBA_SHARE" >>/etc/samba/smb.conf
 fi
 
 echo "Restarting SAMBA..."

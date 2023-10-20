@@ -1,3 +1,4 @@
+#!/bin/bash
 # Download ZSH config
 echo "Replacing ZSH config for user $USER..."
 cp ~/.zshrc ~/.zshrc.bak
@@ -10,6 +11,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # Set Zsh as the default shell
 echo "Setting Zsh as the default shell..."
-sudo chsh -s $(which zsh) $USER
+sudo chsh -s "$(which zsh)" "$USER"
 
 echo "Done..."

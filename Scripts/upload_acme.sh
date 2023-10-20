@@ -6,7 +6,8 @@ ACME_FILE="acme.json"
 ACME_DIR_PROXY="/home/ubuntu/Proxy/Traefik/cert"
 ACME_DIR_HOST="/public/SSD/Config/Home/Traefik/cert"
 declare -i offset=0
-declare -i current_day=$(date +%j)
+declare -i current_day
+current_day=$(date +%j)
 current_day=$((current_day - offset))
 
 # Specify the day of the year when you want the script to run (e.g., every 60 days)
