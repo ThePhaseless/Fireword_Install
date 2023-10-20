@@ -29,20 +29,17 @@ set_permissions_ownership() {
   sudo chown nobody:nogroup "$1" -R
 }
 
-# Set default values for environment variables from fireword.env
-if [ -f fireword.env ]; then
-  echo "Using environment variables from fireword.env"
-  export $(cat fireword.env | grep -v '#' | awk '/=/ {print $1}')
-else
-  echo "fireword.env not found, using default values"
-fi
-
-# Display default environment variables
 echo "Using these environment variables:"
-echo "SSD_PATH=$SSD_PATH"
-echo "JBOD_PATH=$JBOD_PATH"
-echo "CONFIG_PATH=$CONFIG_PATH"
-echo "MEDIA_PATH=$MEDIA_PATH"
+# Set default values for environment variables from fireword.env
+if [ -f ./Host/fireword.env ]; then
+  echo "Using environment variables from ./Host/fireword.env"
+  envString = $(cat ./Host/fireword.env | grep -v '#' | awk '/=/ {print $1}')
+  echo $envString
+  export $envString
+else
+  echo "No ./Host/fireword.env file found, please set them and run the script again."
+  exit
+fi
 
 # Ask the user if the default environment variables should be used
 read -p "Continue? (Y/n): " answer
@@ -217,7 +214,7 @@ echo "Do not remove this folder, it is used by the post-installation script."
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now."
 echo "To configure containers, run"
-echo "./Scripts/run_containers.sh"
+echo "./Scripts/update_containers.sh"
 
 echo "Refreshing groups..."
 newgrp docker

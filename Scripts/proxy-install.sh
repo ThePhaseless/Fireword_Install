@@ -35,7 +35,7 @@ else
     echo "Adding upload_acme.sh to crontab..."
     (
         crontab -l 2>/dev/null
-        echo "0 4 * * * ~/Proxy/upload_acme.sh"
+        echo "0 4 * * * $PWD/Scripts/upload_acme.sh"
     ) | crontab -
     echo "Done..."
 fi
@@ -50,10 +50,10 @@ bash ./Scripts/setup_zsh.sh
 ## For root
 sudo bash ./Scripts/setup_zsh.sh
 
-# Make upload_acme.sh executable
-chmod +x ~/Proxy/upload_acme.sh
+bash ./Scripts/update_traefik_conf.sh
+bash ./Scripts/update_proxy_stack.sh
 
 echo "Done..."
 echo "Proxy setup complete! Don't forget to upload your acme.json file to server after the first certificate is generated."
 echo "You can do this by running the following command:"
-echo "~/Proxy/upload_acme.sh --force"
+echo "bash $PWD/Scripts/upload_acme.sh"

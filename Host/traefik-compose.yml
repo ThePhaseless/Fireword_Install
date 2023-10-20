@@ -28,8 +28,8 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${CONFIG_PATH}/${CATEGORY}/Traefik/cert:/cert
-      - ${CONFIG_PATH}/${CATEGORY}/Traefik/config:/config
+      - ${CONFIG_PATH}/${CATEGORY}/cert:/cert
+      - ${CONFIG_PATH}/${CATEGORY}/config:/config
       # - ./traefik.yaml:/etc/traefik/traefik.yaml
     labels:
       - traefik.http.routers.proxy.tls=true

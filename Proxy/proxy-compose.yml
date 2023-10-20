@@ -41,13 +41,12 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./Traefik/config:/config
-      - ./Traefik/cert:/cert
+      - ./Proxy/Traefik/config:/config
+      - ./Proxy/Traefik/cert:/cert
 
   authelia:
     container_name: authelia
     image: authelia/authelia:latest
-    command: ["--config", "/config/authelia.yml"]
     environment:
       - AUTHELIA_NOTIFIER_SMTP_HOST=smtp.gmail.com
       - AUTHELIA_NOTIFIER_SMTP_PORT=587
@@ -57,12 +56,10 @@ services:
       - AUTHELIA_LOG_LEVEL=info
       - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
       - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
-      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
+      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOS x TNAME}
       - AUTHELIA_ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - AUTHELIA_LOCAL_PATH=/config/db.sqlite3
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
-    volumes:
-      - "./Authelia:/config"
     labels:
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"
       - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name"

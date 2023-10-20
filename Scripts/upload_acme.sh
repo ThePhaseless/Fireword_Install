@@ -19,11 +19,9 @@ if [ "$((current_day % target_day))" -eq 0 ] || [ "$1" == "--force" ]; then
     echo "Last run $((current_day % target_day)) days ago"
     echo "Uploading acme.json file to $SSH_HOSTNAME..."
 
-    # Change the permissions of the file to 777
-    echo "Changing permissions of $ACME_DIR_PROXY
-/$ACME_FILE to 777..."
-    sudo chmod 777 $ACME_DIR_PROXY
-    /$ACME_FILE
+    # Change the permissions of the file to Read by All
+    echo "Changing permissions of $ACME_DIR_PROXY/$ACME_FILE to 644..."
+    sudo chmod 644 $ACME_DIR_PROXY/$ACME_FILE
     # Give it a second to change the permissions
     sleep 1
 
@@ -35,16 +33,13 @@ if [ "$((current_day % target_day))" -eq 0 ] || [ "$1" == "--force" ]; then
     ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo rm -f $ACME_DIR_HOST/$ACME_FILE"
 
     echo "Uploading $ACME_FILE to $SSH_HOSTNAME..."
-    scp $ACME_DIR_PROXY
-    /$ACME_FILE $SSH_USERNAME@$SSH_HOSTNAME:$ACME_DIR_HOST
+    scp $ACME_DIR_PROXY/$ACME_FILE $SSH_USERNAME@$SSH_HOSTNAME:$ACME_DIR_HOST
 
     echo "Changing permissions of $ACME_DIR_HOST/$ACME_FILE on $SSH_HOSTNAME to 600..."
     ssh -t $SSH_USERNAME@$SSH_HOSTNAME "sudo chmod 600 $ACME_DIR_HOST/$ACME_FILE"
 
-    echo "Changing permissions of $ACME_DIR_PROXY
-/$ACME_FILE back to 600..."
-    sudo chmod 600 $ACME_DIR_PROXY
-    /$ACME_FILE
+    echo "Changing permissions of $ACME_DIR_PROXY/$ACME_FILE back to 600..."
+    sudo chmod 600 $ACME_DIR_PROXY/$ACME_FILE
 
     echo "Done..."
 else
