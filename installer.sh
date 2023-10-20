@@ -4,6 +4,7 @@
 # ----------------------------------
 git clone https://github.com/ThePhaseless/Fireword_Install.git
 cd Fireword_Install
+git pull
 chmod +x fireword-install.sh
 # Ask if this is a host or a proxy
 echo "Is this a host or a proxy?"

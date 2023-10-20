@@ -12,14 +12,16 @@ if [ -z "$PROXY" || "$PROXY" == "false" ]; then
     echo "PROXY is not set, using Host configuration"
 
     echo "Pulling Traefik configs"
-    git pull $traefikRepo $CONFIG_PATH/$CATEGORY/config
+    git clone $traefikRepo $CONFIG_PATH/$CATEGORY/config
+    git pull
 
     echo "Done"
 else
     echo "PROXY is set, using Proxy configuration"
 
     echo "Pulling Traefik configs"
-    git pull $traefikRepo ./Proxy/Traefik/config
+    git clone $traefikRepo ./Proxy/Traefik/config
+    git pull
 
     echo "Done"
 fi
