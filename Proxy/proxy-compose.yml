@@ -13,8 +13,9 @@ services:
     image: traefik:latest
     # Enables the web UI and tells Traefik to listen to docker
     command:
-      - "--api.insecure=true"
+      - "--api=true"
       - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
@@ -23,6 +24,7 @@ services:
       - "--global.sendAnonymousUsage=true"
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
+      - "--providers.docker=true"
       - "--certificatesResolvers.cloudflare.acme.email=${CF_API_EMAIL}"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
@@ -74,8 +76,9 @@ services:
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
     labels:
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"
+      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name"
-      - "traefik.http.routers.authelia-router.rule=Host(`auth.${PROXY_HOSTNAME}`)"
-      - "traefik.http.routers.authelia-router.entrypoints=websecure"
-      - "traefik.http.routers.authelia-router.tls.certresolver=cloudflare"
+      - "traefik.http.routers.authelia.rule=Host(`auth.${PROXY_HOSTNAME}`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.tls.certresolver=cloudflare"
       - "traefik.http.services.authelia-service.loadbalancer.server.port=9091"
