@@ -1,5 +1,4 @@
 *.conf
 *.env
-Proxy/proxy.env
 Proxy/Authelia/
 Proxy/Traefik/
