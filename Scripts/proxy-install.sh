@@ -77,5 +77,3 @@ bash ./Scripts/update_proxy_stack.sh
 
 echo "Done..."
 echo "Proxy setup complete! Don't forget to upload your acme.json file to server after the first certificate is generated."
-echo "You can do this by running the following command:"
-echo "bash $PWD/Scripts/upload_acme.sh"
