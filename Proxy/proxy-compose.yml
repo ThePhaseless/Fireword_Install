@@ -33,7 +33,9 @@ services:
       - PROXY=${PROXY}
       - CF_EMAIL=${CF_API_EMAIL}
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - HOSTNAME=${HOSTNAME}
+      - HOST_IP=${HOST_IP}
+      - PROXY_IP=${PROXY_IP}
       - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
@@ -49,7 +51,7 @@ services:
     labels:
       # Enable Traefik Dashboard
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`proxy.${PROXY_HOSTNAME}`)"
+      - "traefik.http.routers.traefik.rule=Host(`proxy.${HOSTNAME}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.middlewares=authelia@file"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
@@ -67,9 +69,10 @@ services:
       - AUTHELIA_NOTIFIER_SMTP_PASSWORD=${SMTP_PASSWORD}
       - AUTHELIA_NOTIFIER_SMTP_SENDER=${SMTP_SENDER}
       - AUTHELIA_LOG_LEVEL=info
-      - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
-      - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
-      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET}
+      - AUTHELIA_SESSION_DOMAIN=${HOSTNAME}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
+      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${HOSTNAME}
       - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
       - AUTHELIA_STORAGE_LOCAL_PATH=/config/db.sqlite3
       - AUTHELIA_AUTHENTICATION_BACKEND_FILE_PATH=/config/users_database.yml
