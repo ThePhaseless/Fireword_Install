@@ -18,7 +18,9 @@ services:
       - "--providers.file.watch=true"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
     environment:
-      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - HOSTNAME=${HOSTNAME}
+      - HOST_IP=${HOST_IP}
+      - PROXY_IP=${PROXY_IP}
       - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
