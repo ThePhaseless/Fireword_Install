@@ -39,8 +39,8 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./Proxy/Traefik/config:/config
-      - ./Proxy/Traefik/cert:/cert
+      - $PROXY_GIT_REPO/Proxy/Traefik/config:/config
+      - $PROXY_GIT_REPO/Proxy/Traefik/cert:/cert
     labels:
       # Enable Traefik Dashboard
       - "traefik.enable=true"
@@ -53,7 +53,7 @@ services:
     container_name: authelia
     image: authelia/authelia:latest
     volumes:
-      - ./Proxy/Authelia/config:/config
+      - $PROXY_GIT_REPO/Proxy/Authelia/config:/config
     environment:
       - AUTHELIA_NOTIFIER_SMTP_HOST=smtp.gmail.com
       - AUTHELIA_NOTIFIER_SMTP_PORT=587
