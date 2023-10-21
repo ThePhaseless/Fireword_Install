@@ -11,6 +11,12 @@ if [ -z "$PROXY" ]; then
     esac
 fi
 
+# Check if proxy.env exists
+if [ ! -f ./Proxy/proxy.env ]; then
+    echo "proxy.env does not exist, creating..."
+    cp ./Proxy/proxy.env.example ./Proxy/proxy.env
+fi
+
 # Update repo
 git pull
 

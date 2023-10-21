@@ -4,6 +4,7 @@
             "file:///public/SSD/MPI/proxy-compose.yml",
             "file:///public/SSD/MPI/traefik-compose.yml",
             "file:///public/SSD/Projects/Fireword_Install/Traefik/traefik-compose.yml"
-        ]
+        ],
+        "https://json.schemastore.org/traefik-v2-file-provider.json": "file:///home/ubuntu/Fireword_Install/Proxy/Traefik/config/authelia.yaml"
     }
 }

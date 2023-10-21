@@ -7,7 +7,7 @@ services:
     # Enables the web UI and tells Traefik to listen to docker
     command:
       - "--api.dashboard=true"
-      - "--providers.docker"
+      - "--api.insecure=true"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.traefik.address=:8080"
@@ -18,21 +18,25 @@ services:
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
-      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
+      - HOST_IP=${HOST_IP}
+      - PROXY_IP=${PROXY_IP}
       - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
       - "80:80"
+      # The HTTPS port
       - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8090:8080"
     volumes:
       # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
       - ${CONFIG_PATH}/${CATEGORY}/cert:/cert
       - ${CONFIG_PATH}/${CATEGORY}/config:/config
-      # - ./traefik.yaml:/etc/traefik/traefik.yaml
     labels:
       - traefik.http.routers.proxy.tls=true
       - traefik.http.routers.proxy.tls.certresolver=cloudflare
-      - traefik.http.routers.proxy.tls.domains[0].main=${PROXY_HOSTNAME}
-      - traefik.http.routers.proxy.tls.domains[0].sans=*.${PROXY_HOSTNAME}
+      - traefik.http.routers.proxy.tls.domains[0].main=${HOSTNAME}
+      - traefik.http.routers.proxy.tls.domains[0].sans=*.${HOSTNAME}

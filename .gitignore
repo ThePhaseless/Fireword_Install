@@ -1,2 +1,4 @@
-*/*.conf
-*/*.env
+*.conf
+*.env
+Proxy/Authelia/
+Proxy/Traefik/

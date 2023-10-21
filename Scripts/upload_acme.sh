@@ -4,7 +4,7 @@ SSH_USERNAME="user"
 SSH_HOSTNAME="hostname"
 ACME_FILE="acme.json"
 ACME_DIR_PROXY="/home/ubuntu/Proxy/Traefik/cert"
-ACME_DIR_HOST="/public/SSD/Config/Home/Traefik/cert"
+ACME_DIR_HOST="/public/SSD/Config/Traefik/cert"
 declare -i offset=0
 declare -i current_day
 current_day=$(date +%j)

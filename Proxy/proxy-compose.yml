@@ -30,9 +30,12 @@ services:
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=0"
     environment:
+      - PROXY=${PROXY}
       - CF_EMAIL=${CF_API_EMAIL}
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-      - PROXY_HOSTNAME=${PROXY_HOSTNAME}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
+      - HOST_IP=${HOST_IP}
+      - PROXY_IP=${PROXY_IP}
       - TARGET_IP=${TARGET_IP}
     ports:
       # The HTTP port
@@ -48,10 +51,11 @@ services:
     labels:
       # Enable Traefik Dashboard
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`proxy.${PROXY_HOSTNAME}`)"
+      - "traefik.http.routers.traefik.rule=Host(`proxy.${PUBLIC_HOSTNAME}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.middlewares=authelia"
+      - "traefik.http.routers.traefik.middlewares=authelia@file"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.service=api@internal"
 
   authelia:
     container_name: authelia
@@ -65,20 +69,13 @@ services:
       - AUTHELIA_NOTIFIER_SMTP_PASSWORD=${SMTP_PASSWORD}
       - AUTHELIA_NOTIFIER_SMTP_SENDER=${SMTP_SENDER}
       - AUTHELIA_LOG_LEVEL=info
-      - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
-      - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
-      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET}
+      - AUTHELIA_SESSION_DOMAIN=${PUBLIC_HOSTNAME}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
+      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PUBLIC_HOSTNAME}
       - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
       - AUTHELIA_STORAGE_LOCAL_PATH=/config/db.sqlite3
       - AUTHELIA_AUTHENTICATION_BACKEND_FILE_PATH=/config/users_database.yml
       - AUTHELIA_AUTHENTICATION_BACKEND_FILE_WATCH=true
       - AUTHELIA_AUTHENTICATION_BACKEND_FILE_SEARCH_EMAIL=true
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
-    labels:
-      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"
-      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name"
-      - "traefik.http.routers.authelia.rule=Host(`auth.${PROXY_HOSTNAME}`)"
-      - "traefik.http.routers.authelia.entrypoints=websecure"
-      - "traefik.http.routers.authelia.tls.certresolver=cloudflare"
-      - "traefik.http.services.authelia-service.loadbalancer.server.port=9091"
