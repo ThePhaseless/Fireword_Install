@@ -21,9 +21,9 @@ if [ -z "$PROXY" ]; then
 else
     echo "PROXY is set, using Proxy configuration"
 
-    echo "Pulling Traefik configs from $TRAEFIK_REPO to ./Proxy/Traefik/config"
-    git clone "$TRAEFIK_REPO" ./Proxy/Traefik/config
-    git pull ./Proxy/Traefik/config
+    echo "Pulling Traefik configs from $TRAEFIK_REPO to $PROXY_GIT_REPO/Proxy/Traefik/config"
+    git clone "$TRAEFIK_REPO" "$PROXY_GIT_REPO"/Proxy/Traefik/config
+    git pull "$PROXY_GIT_REPO"/Proxy/Traefik/config
 
     echo "Done"
 fi
