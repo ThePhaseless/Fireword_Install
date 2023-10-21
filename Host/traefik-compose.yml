@@ -17,6 +17,7 @@ services:
       - "--providers.file.directory=/config"
       - "--providers.file.watch=true"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
+      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
       - HOSTNAME=${HOSTNAME}
       - HOST_IP=${HOST_IP}
