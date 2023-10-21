@@ -19,7 +19,7 @@ services:
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
     environment:
-      - HOSTNAME=${HOSTNAME}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
       - HOST_IP=${HOST_IP}
       - PROXY_IP=${PROXY_IP}
       - TARGET_IP=${TARGET_IP}
