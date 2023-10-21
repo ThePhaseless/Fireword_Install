@@ -41,6 +41,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./Proxy/Traefik/config:/config
       - ./Proxy/Traefik/cert:/cert
+    labels:
+      # Enable Traefik Dashboard
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`proxy.${PROXY_HOSTNAME}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=authelia"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
 
   authelia:
     container_name: authelia
