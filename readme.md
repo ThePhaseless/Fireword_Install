@@ -21,13 +21,13 @@
 <!-- markdownlint-disable MD051 -->
 ## 📖 Table of Contents
 
-- [📖 Table of Contents](#📖-table-of-contents)
-- [📍 Overview](#📍-overview)
-- [📂 Repository Structure](#📂-repository-structure)
-- [⚙️ Modules](#⚙️-modules)
-- [🚀 Getting Started](#🚀-getting-started)
-- [🤝 Contributing](#🤝-contributing)
-- [📄 License](#📄-license)
+- [📖 Table of Contents](#-table-of-contents)
+- [📍 Overview](#-overview)
+- [📂 Repository Structure](#-repository-structure)
+- [⚙️ Modules](#-modules)
+- [🚀 Getting Started](#-getting-started)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
 ---
 
