@@ -34,3 +34,8 @@ services:
       # So that Traefik can listen to the Docker events
       - ${CONFIG_PATH}/${CATEGORY}/cert:/cert
       - ${CONFIG_PATH}/${CATEGORY}/config:/config
+    labels:
+      - traefik.http.routers.proxy.tls=true
+      - traefik.http.routers.proxy.tls.certresolver=cloudflare
+      - traefik.http.routers.proxy.tls.domains[0].main=${PROXY_HOSTNAME}
+      - traefik.http.routers.proxy.tls.domains[0].sans=*.${PROXY_HOSTNAME}
