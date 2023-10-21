@@ -55,8 +55,8 @@ services:
       - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
       - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
       - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
-      - AUTHELIA_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
-      - AUTHELIA_LOCAL_PATH=/config/db.sqlite3
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
+      - AUTHELIA_STORAGE_LOCAL_PATH=/config/db.sqlite3
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
     labels:
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"

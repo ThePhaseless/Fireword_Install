@@ -60,7 +60,7 @@ else
 fi
 
 echo "Please fill out the env file with your information..."
-read -p "Press enter to continue of CTRL+C to cancel..."
+read -r -p "Press enter to continue of CTRL+C to cancel..."
 nano Proxy/proxy.env
 
 bash ./Scripts/update_traefik_conf.sh
