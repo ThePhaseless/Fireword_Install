@@ -53,19 +53,19 @@ export PROXY=true
 export PROXY_GIT_REPO=$PWD
 
 # Add Proxy environment variables if they don't exist
-if grep -Fxq "PROXY=true" /etc/zsh/zprofile; then
+if grep -Fxq "export PROXY=true" /etc/zsh/zprofile; then
     echo "PROXY is already in the config file"
 else
     echo "Adding PROXY to the config file..."
-    echo "PROXY=true" | sudo tee -a /etc/zsh/zprofile
+    echo "export PROXY=true" | sudo tee -a /etc/zsh/zprofile
 fi
 
 # Add Proxy Git Repo environment variables if they don't exist
-if grep -Fxq "PROXY_GIT_REPO=$PROXY_GIT_REPO" /etc/zsh/zprofile; then
+if grep -Fxq "export PROXY_GIT_REPO=$PROXY_GIT_REPO" /etc/zsh/zprofile; then
     echo "PROXY_GIT_REPO is already in the config file"
 else
     echo "Adding PROXY_GIT_REPO to the config file..."
-    echo "PROXY_GIT_REPO=$PROXY_GIT_REPO" | sudo tee -a /etc/zsh/zprofile
+    echo "export PROXY_GIT_REPO=$PROXY_GIT_REPO" | sudo tee -a /etc/zsh/zprofile
 fi
 
 echo "Please fill out the env file with your information..."
