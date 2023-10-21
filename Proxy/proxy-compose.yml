@@ -45,6 +45,8 @@ services:
   authelia:
     container_name: authelia
     image: authelia/authelia:latest
+    volumes:
+      - ./Proxy/Authelia/config:/config
     environment:
       - AUTHELIA_NOTIFIER_SMTP_HOST=smtp.gmail.com
       - AUTHELIA_NOTIFIER_SMTP_PORT=587
@@ -57,6 +59,9 @@ services:
       - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
       - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
       - AUTHELIA_STORAGE_LOCAL_PATH=/config/db.sqlite3
+      - AUTHELIA_AUTHENTICATION_BACKEND_FILE_PATH=/config/users_database.yml
+      - AUTHELIA_AUTHENTICATION_BACKEND_FILE_WATCH=true
+      - AUTHELIA_AUTHENTICATION_BACKEND_FILE_SEARCH_EMAIL=true
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
     labels:
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.${PROXY_HOSTNAME}%2F"
