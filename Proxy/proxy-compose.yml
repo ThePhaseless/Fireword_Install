@@ -7,7 +7,6 @@ services:
 
   traefik:
     depends_on:
-      - watchtower
       - authelia
     container_name: traefik
     # The official v2 Traefik docker image
@@ -27,7 +26,6 @@ services:
       - "--certificatesResolvers.cloudflare.acme.email=${CF_EMAIL}"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
-      - "--certificatesResolvers.cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=0"
     environment:
       - CF_EMAIL=${CF_EMAIL}
@@ -56,8 +54,8 @@ services:
       - AUTHELIA_LOG_LEVEL=info
       - AUTHELIA_JWT_SECRET=${PROXY_HOSTNAME}
       - AUTHELIA_SESSION_DOMAIN=${PROXY_HOSTNAME}
-      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOS x TNAME}
-      - AUTHELIA_ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - AUTHELIA_DEFAULT_REDIRECTION_URL=https://${PROXY_HOSTNAME}
+      - AUTHELIA_ENCRYPTION_KEY=${AUTHELIA_ENCRYPTION_KEY}
       - AUTHELIA_LOCAL_PATH=/config/db.sqlite3
       - AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=two_factor
     labels:

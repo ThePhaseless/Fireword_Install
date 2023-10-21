@@ -44,7 +44,7 @@ echo "Reloading daemon..."
 sudo systemctl daemon-reload
 
 # Enable vscode service
-echo "Enabling VSCode service..."
+echo "Enabling VSCode Web Service..."
 sudo systemctl enable --now vscode.service
 
 # Done

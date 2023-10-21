@@ -35,7 +35,7 @@ if [ -f ./Host/fireword.env ]; then
   echo "Using environment variables from ./Host/fireword.env"
   envString=$(cmd ./Host/fireword.env | grep -v '#' | awk '/=/ {print $1}')
   echo "$envString"
-  export "$envString"
+  export "${envString?}"
 else
   echo "No ./Host/fireword.env file found, please set them and run the script again."
   exit
@@ -99,7 +99,6 @@ sudo bash ./Scripts/setup_zsh.sh
 
 # Add CONFIG_PATH and MEDIA_PATH to environment variables
 echo "Adding environment variables to /etc/zsh/zprofile..."
-
 ## Check if envs are already in the config file
 if grep -Fxq "CONFIG_PATH=$CONFIG_PATH" /etc/zsh/zprofile; then
   echo "CONFIG_PATH is already in the config file"
@@ -137,6 +136,7 @@ else
 fi
 echo "Done..."
 
+# Set up Rclone
 bash ./Scripts/setup_rclone.sh
 
 # Install Tailscale
@@ -199,8 +199,8 @@ echo "Done..."
 # Install screen_off.service
 echo "Installing screen-off.service..."
 sudo cp ./Scripts/screen-off.service /etc/systemd/system/screen-off.service
-sudo chmod +x /etc/systemd/system/screen-off.service
 
+sudo systemctl daemon-reload
 sudo systemctl enable screen-off.service
 sudo systemctl start screen-off.service
 echo "Done..."
@@ -208,13 +208,12 @@ echo "Done..."
 # Clean up unnecessary packages
 echo "Cleaning up unnecessary packages..."
 sudo apt autoremove -y
+sudo apt autoclean -y
 echo "Done..."
 
 echo "Do not remove this folder, it is used by the post-installation script."
 echo "Post-Installation Script finished successfully!"
 echo "It is recommended to reboot the system now."
-echo "To configure containers, run"
-echo "./Scripts/update_containers.sh"
 
 echo "Refreshing groups..."
 newgrp docker

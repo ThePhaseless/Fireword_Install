@@ -15,4 +15,4 @@ fi
 git pull
 
 echo "Starting Traefik stack"
-docker compose up -d -f ./Proxy/proxy-compose.yml --env-file ./Proxy/proxy.env
+docker compose --file ./Proxy/proxy-compose.yml --env-file ./Proxy/proxy.env up -d

@@ -41,7 +41,6 @@ else
 fi
 
 # Install VS Code
-echo "Installing VS Code..."
 bash ./Scripts/setup_vscode.sh
 
 # Install Zsh and Oh-My-Zsh
@@ -50,9 +49,19 @@ bash ./Scripts/setup_zsh.sh
 ## For root
 sudo bash ./Scripts/setup_zsh.sh
 
-echo "Adding environment variables"
-echo "PROXY=true" >>~/.zshrc
-echo "PROXY=true" >>~/.bashrc
+export PROXY=true
+
+# Add Proxy environment variables if they don't exist
+if grep -Fxq "PROXY=true" /etc/zsh/zprofile; then
+    echo "PROXY is already in the config file"
+else
+    echo "Adding PROXY to the config file..."
+    echo "PROXY=true" | sudo tee -a /etc/zsh/zprofile
+fi
+
+echo "Please fill out the env file with your information..."
+read -p "Press enter to continue of CTRL+C to cancel..."
+nano Proxy/proxy.env
 
 bash ./Scripts/update_traefik_conf.sh
 bash ./Scripts/update_proxy_stack.sh
