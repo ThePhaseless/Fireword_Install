@@ -19,6 +19,7 @@ services:
       - "--providers.file.watch=true"
       - "--certificatesResolvers.cloudflare.acme.storage=/cert/acme.json"
       - "--certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+      - "--metrics.prometheus=true"
     environment:
       - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
       - HOST_IP=${HOST_IP}
