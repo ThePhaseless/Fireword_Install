@@ -6,6 +6,11 @@
 <h1 align="center">
 <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/SMS_Proxy.png" width="200" />
 
+# PROJECT MOVED
+Project has been moved with other fireword related projects to <https://github.com/ThePhaseless/Interstellar>
+
+
+# Old Readme
 <p align="center">
 <img src="https://img.shields.io/badge/GNU%20Bash-4EAA25.svg?style&logo=GNU-Bash&logoColor=white" alt="GNU%20Bash" />
 <img src="https://img.shields.io/badge/Markdown-000000.svg?style&logo=Markdown&logoColor=white" alt="Markdown" />
